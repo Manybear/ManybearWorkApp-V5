@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manybear Work App</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#8989eb">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Manybear">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --purple:#8989eb;--purple-light:#e8e7fc;--purple-dark:#5a5ab8;
+  --orange:#f46524;--orange-light:#ffe6dd;
+  --green:#11734b;--green-light:#d4edbc;
+  --red:#c0392b;--red-light:#fde8e8;
+  --yellow-light:#ffe5a0;--yellow-dark:#473821;
+  --blue-light:#bfe1f6;--blue-dark:#0a53a8;
+  --gray:#f5f5f5;--gray2:#e0e0e0;--gray3:#888;--gray4:#444;
+  --white:#fff;--text:#1f1f1f;
+  --font:'Segoe UI',Arial,sans-serif;
+}
+body{font-family:var(--font);background:#f0f0f8;color:var(--text);font-size:14px}
+nav{background:var(--purple);color:#fff;display:flex;align-items:center;padding:0 20px;height:54px;gap:8px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+nav .logo{font-size:18px;font-weight:700;letter-spacing:1px;flex:1}
+.nav-btn{background:rgba(255,255,255,.15);border:none;color:#fff;padding:6px 14px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;transition:.2s}
+.nav-btn:hover{background:rgba(255,255,255,.28)}
+.nav-btn.active{background:#fff;color:var(--purple)}
+.page{display:none;padding:20px;max-width:1200px;margin:0 auto}
+.page.active{display:block}
+.card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.08);margin-bottom:16px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.stat{background:#fff;border-radius:12px;padding:16px 20px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.stat .num{font-size:28px;font-weight:700;color:var(--purple)}
+.stat .lbl{font-size:12px;color:var(--gray3);margin-top:4px}
+.stat.orange .num{color:var(--orange)}
+.stat.green .num{color:var(--green)}
+.stat.red .num{color:var(--red)}
+.progress-wrap{background:var(--gray2);border-radius:99px;height:10px;margin:8px 0}
+.progress-bar{height:10px;border-radius:99px;background:var(--purple);transition:.4s}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+.sticky-col{position:sticky;left:0;box-shadow:2px 0 5px rgba(0,0,0,.08)}
+th.sticky-col{background:var(--purple);z-index:6;cursor:default}
+td.sticky-col{background:#fff;z-index:5}
+tr:nth-child(even) td.sticky-col{background:#f9f9ff}
+th{background:var(--purple);color:#fff;padding:10px 12px;text-align:left;white-space:nowrap;cursor:pointer;user-select:none}
+th:hover{background:var(--purple-dark)}
+th .sort-icon{font-size:10px;margin-left:4px;opacity:.7}
+td{padding:9px 12px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
+tr:hover td{background:#fafafa}
+.badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
+.badge.done{background:var(--green-light);color:var(--green)}
+.badge.inprog{background:var(--blue-light);color:var(--blue-dark)}
+.badge.plan{background:#e0e0e0;color:#555}
+.badge.start{background:var(--orange-light);color:var(--orange)}
+.badge.notyet{background:var(--red-light);color:var(--red)}
+.badge.high{background:var(--red-light);color:var(--red)}
+.badge.mid{background:var(--yellow-light);color:var(--yellow-dark)}
+.badge.low{background:var(--green-light);color:var(--green)}
+.badge.urgent{background:#b10202;color:#ffcfc9}
+.filter-bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;align-items:center}
+.filter-bar select,.filter-bar input{padding:7px 10px;border:1px solid var(--gray2);border-radius:8px;font-size:13px;background:#fff;outline:none}
+.filter-bar select:focus,.filter-bar input:focus{border-color:var(--purple)}
+.btn{padding:8px 18px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;transition:.2s}
+.btn-primary{background:var(--purple);color:#fff}
+.btn-primary:hover{background:var(--purple-dark)}
+.btn-orange{background:var(--orange);color:#fff}
+.btn-orange:hover{opacity:.88}
+.btn-ghost{background:#f0f0f0;color:#555}
+.btn-ghost:hover{background:#e0e0e0}
+.btn-sm{padding:4px 10px;font-size:12px}
+.btn-danger{background:var(--red-light);color:var(--red)}
+.btn-danger:hover{background:#f5c6c6}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border-radius:16px;padding:28px;width:min(580px,95vw);max-height:90vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.18)}
+.modal h2{font-size:18px;font-weight:700;color:var(--purple);margin-bottom:20px}
+.form-row{margin-bottom:14px}
+.form-row label{display:block;font-size:12px;font-weight:600;color:var(--gray3);margin-bottom:5px}
+.form-row input,.form-row select,.form-row textarea{width:100%;padding:9px 12px;border:1px solid var(--gray2);border-radius:8px;font-size:14px;font-family:var(--font);outline:none;transition:.2s}
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(137,137,235,.15)}
+.form-row textarea{resize:vertical;min-height:70px}
+.form-2col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-btns{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+.mini-bar{width:90px;height:8px;background:var(--gray2);border-radius:99px;display:inline-block;vertical-align:middle}
+.mini-bar-fill{height:8px;border-radius:99px}
+.sec-title{font-size:16px;font-weight:700;color:var(--purple);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.month-group{margin-bottom:20px}
+.month-label{font-size:14px;font-weight:700;color:#fff;background:var(--purple);display:inline-block;padding:4px 16px;border-radius:20px;margin-bottom:10px}
+.settings-section{margin-bottom:24px}
+.tag-list{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.tag-item{background:var(--purple-light);color:var(--purple-dark);padding:5px 14px;border-radius:20px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px}
+.tag-item .del{cursor:pointer;color:var(--red);font-weight:700;font-size:15px;line-height:1}
+.add-tag-row{display:flex;gap:8px;margin-top:10px}
+.add-tag-row input{flex:1;padding:7px 12px;border:1px solid var(--gray2);border-radius:8px;font-size:13px}
+@media print{
+  nav,.filter-bar,.btn,.modal-bg,#addBtn,#pdfBtn,#notiBar,
+  #page-dashboard,#page-tasks,#page-history,#page-settings{display:none!important}
+  body{background:#fff}
+  @page{size:A4 landscape;margin:0}
+}
+.today-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f0f0f0}
+.today-item:last-child{border-bottom:none}
+.today-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.today-dot.overdue{background:var(--red)}
+.today-dot.soon{background:var(--orange)}
+.today-dot.ok{background:var(--green)}
+#dashChart{display:block;margin:0 auto 10px}
+.empty{text-align:center;padding:40px 20px;color:var(--gray3)}
+.empty span{font-size:40px;display:block;margin-bottom:10px}
+#pdfModal .pdf-option{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f0f0f0;cursor:pointer}
+#pdfModal .pdf-option:last-child{border-bottom:none}
+#pdfModal .pdf-option input[type=checkbox]{width:18px;height:18px;accent-color:var(--purple)}
+/* NOTIFICATION BANNER */
+#notiBar{background:#b10202;color:#fff;padding:12px 20px;display:none;position:sticky;top:54px;z-index:99;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+#notiBar .noti-inner{max-width:1200px;margin:0 auto;display:flex;align-items:flex-start;gap:12px}
+#notiBar .noti-title{font-weight:700;font-size:14px;white-space:nowrap}
+#notiBar .noti-list{font-size:13px;flex:1;line-height:1.8}
+#notiBar .noti-close{cursor:pointer;font-size:20px;line-height:1;opacity:.8;flex-shrink:0}
+#notiBar .noti-close:hover{opacity:1}
+/* IMAGE PREVIEW */
+.img-thumb{width:36px;height:36px;border-radius:6px;object-fit:cover;cursor:pointer;border:1px solid var(--gray2)}
+.img-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;align-items:center;justify-content:center}
+.img-modal-bg.open{display:flex}
+.img-modal-bg img{max-width:90vw;max-height:90vh;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,.4)}
+.img-modal-bg .close-img{position:fixed;top:20px;right:28px;color:#fff;font-size:32px;cursor:pointer;font-weight:700}
+/* FILE ATTACH AREA */
+.attach-area{border:2px dashed var(--gray2);border-radius:10px;padding:16px;text-align:center;cursor:pointer;transition:.2s;margin-top:6px}
+.attach-area:hover{border-color:var(--purple);background:var(--purple-light)}
+.attach-area input{display:none}
+.attach-preview{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.attach-preview img{width:60px;height:60px;object-fit:cover;border-radius:8px;border:1px solid var(--gray2)}
+.attach-file-name{font-size:12px;color:var(--gray3);background:#f5f5f5;padding:4px 10px;border-radius:6px}
+</style>
+</head>
+<body>
+
+<!-- NOTIFICATION BANNER -->
+<div id="notiBar">
+  <div class="noti-inner">
+    <span style="font-size:20px">🔔</span>
+    <div style="flex:1">
+      <div class="noti-title">⚠️ งานที่ใกล้ถึงกำหนด (ภายใน 3 วัน) ยังไม่เสร็จ!</div>
+      <div class="noti-list" id="notiList"></div>
+    </div>
+    <span class="noti-close" onclick="document.getElementById('notiBar').style.display='none'">×</span>
+  </div>
+</div>
+
+<nav>
+  <span class="logo">🐻 MANYBEAR</span>
+  <button class="nav-btn active" onclick="showPage('dashboard',this)">Dashboard</button>
+  <button class="nav-btn" onclick="showPage('tasks',this)">รายการงาน</button>
+  <button class="nav-btn" onclick="showPage('history',this)">History</button>
+  <button class="nav-btn" onclick="showPage('settings',this)">ตั้งค่า</button>
+  <button class="btn btn-orange" id="addBtn" onclick="openAddModal()" style="margin-left:12px">+ เพิ่มงาน</button>
+  <button class="btn btn-ghost" id="pdfBtn" onclick="openPdfModal()" style="margin-left:8px">🖨️ PDF</button>
+</nav>
+
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <div class="stats-grid" id="statsGrid"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+    <div class="card">
+      <div class="sec-title">📊 ภาพรวมงาน</div>
+      <canvas id="dashChart" width="220" height="220"></canvas>
+      <div id="chartLegend" style="font-size:13px;line-height:2"></div>
+    </div>
+    <div class="card">
+      <div class="sec-title">🎯 งานวันนี้ต้องทำ</div>
+      <div id="todayList"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="sec-title">🚨 งานเลยกำหนดหรือใกล้เดดไลน์ (≤3 วัน)</div>
+    <div id="urgentList"></div>
+  </div>
+</div>
+
+<!-- TASKS -->
+<div class="page" id="page-tasks">
+  <div class="card">
+    <div class="filter-bar">
+      <input type="text" id="searchInput" placeholder="🔍 ค้นหาชื่องาน..." style="min-width:180px" oninput="renderTasks()">
+      <select id="filterCat" onchange="renderTasks()"><option value="">ทุกหมวดหมู่</option></select>
+      <select id="filterStatus" onchange="renderTasks()">
+        <option value="">ทุกสถานะ</option>
+        <option>เสร็จสิ้น</option><option>กำลังทำ</option><option>เริ่มต้น</option>
+        <option>วางแผน</option><option>ยังไม่เริ่ม</option>
+      </select>
+      <select id="filterPriority" onchange="renderTasks()">
+        <option value="">ทุกความสำคัญ</option>
+        <option>ด่วน</option><option>สูง</option><option>ปานกลาง</option><option>ต่ำ</option>
+      </select>
+      <select id="filterAssigner" onchange="renderTasks()"><option value="">ทุกผู้สั่งงาน</option></select>
+      <button class="btn btn-ghost btn-sm" onclick="clearFilters()">ล้างตัวกรอง</button>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th class="sticky-col">จัดการ</th>
+          <th onclick="sortBy('index')"># <span class="sort-icon" id="si-index"></span></th>
+          <th onclick="sortBy('name')">ชื่องาน <span class="sort-icon" id="si-name"></span></th>
+          <th>หมวด</th>
+          <th onclick="sortBy('status')">สถานะ <span class="sort-icon" id="si-status"></span></th>
+          <th onclick="sortBy('priority')">ความสำคัญ <span class="sort-icon" id="si-priority"></span></th>
+          <th onclick="sortBy('startDate')">เริ่ม <span class="sort-icon" id="si-startDate"></span></th>
+          <th onclick="sortBy('deadline')">กำหนดส่ง <span class="sort-icon" id="si-deadline"></span></th>
+          <th onclick="sortBy('deadline')">วันคงเหลือ <span class="sort-icon" id="si-daysleft"></span></th>
+          <th onclick="sortBy('percent')">%งาน <span class="sort-icon" id="si-percent"></span></th>
+          <th>ผู้สั่งงาน</th>
+          <th>ไฟล์/รูป</th>
+          <th onclick="sortBy('completedAt')">เสร็จจริงวันที่ <span class="sort-icon" id="si-completedAt"></span></th>
+          <th>หมายเหตุ</th>
+        </tr></thead>
+        <tbody id="taskTable"></tbody>
+      </table>
+    </div>
+    <div id="taskEmpty" class="empty" style="display:none"><span>📋</span>ยังไม่มีงาน กด "+ เพิ่มงาน" เพื่อเริ่มต้น</div>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div class="page" id="page-history">
+  <div class="card">
+    <div class="sec-title">📅 ประวัติงาน (รายเดือน)</div>
+    <div id="historyContent"></div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="page" id="page-settings">
+  <div class="card">
+    <div class="settings-section">
+      <div class="sec-title">🗂️ หมวดหมู่งาน</div>
+      <div class="tag-list" id="catTags"></div>
+      <div class="add-tag-row">
+        <input type="text" id="newCat" placeholder="ชื่อหมวดหมู่ใหม่">
+        <button class="btn btn-primary" onclick="addCategory()">+ เพิ่ม</button>
+      </div>
+    </div>
+    <div class="settings-section">
+      <div class="sec-title">👤 ผู้สั่งงาน</div>
+      <div class="tag-list" id="assignerTags"></div>
+      <div class="add-tag-row">
+        <input type="text" id="newAssigner" placeholder="ชื่อผู้สั่งงานใหม่">
+        <button class="btn btn-primary" onclick="addAssigner()">+ เพิ่ม</button>
+      </div>
+    </div>
+    <div class="settings-section">
+      <div class="sec-title">💾 สำรองข้อมูล</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="exportJSON()">📤 Export Backup (JSON)</button>
+        <label class="btn btn-ghost" style="cursor:pointer">📥 Import Backup <input type="file" accept=".json" onchange="importJSON(event)" style="display:none"></label>
+        <button class="btn btn-ghost" onclick="exportCSV()">📊 Export CSV</button>
+      </div>
+    </div>
+    <div class="settings-section">
+      <div class="sec-title">⚠️ ล้างข้อมูล</div>
+      <button class="btn btn-danger" onclick="clearAll()">🗑️ ล้างข้อมูลทั้งหมด</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="modal-bg" id="taskModal">
+  <div class="modal">
+    <h2 id="modalTitle">เพิ่มงานใหม่</h2>
+    <div class="form-row">
+      <label>ชื่อรายการงาน *</label>
+      <input type="text" id="fName" placeholder="ชื่องาน">
+    </div>
+    <div class="form-2col">
+      <div class="form-row">
+        <label>หมวดหมู่</label>
+        <select id="fCat"></select>
+      </div>
+      <div class="form-row">
+        <label>ผู้สั่งงาน</label>
+        <select id="fAssigner"></select>
+      </div>
+    </div>
+    <div class="form-2col">
+      <div class="form-row">
+        <label>สถานะ</label>
+        <select id="fStatus" onchange="handleStatusChange()">
+          <option>ยังไม่เริ่ม</option><option>วางแผน</option>
+          <option>เริ่มต้น</option><option>กำลังทำ</option><option>เสร็จสิ้น</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>ความสำคัญ</label>
+        <select id="fPriority">
+          <option>ด่วน</option><option>สูง</option><option>ปานกลาง</option><option>ต่ำ</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-2col">
+      <div class="form-row">
+        <label>วันเริ่มต้น</label>
+        <input type="date" id="fStart">
+      </div>
+      <div class="form-row">
+        <label>กำหนดส่ง</label>
+        <input type="date" id="fDeadline">
+      </div>
+    </div>
+    <div class="form-row">
+      <label>เปอร์เซนต์งาน: <span id="fPctLbl">0</span>% <span id="fPctLockNote" style="display:none;color:var(--green);font-weight:400">(ล็อกไว้ที่ 100% เพราะสถานะเสร็จสิ้น)</span></label>
+      <input type="range" id="fPct" min="0" max="100" value="0" oninput="document.getElementById('fPctLbl').textContent=this.value">
+    </div>
+    <div class="form-row">
+      <label>ชื่อไฟล์งาน</label>
+      <input type="text" id="fFileName" placeholder="เช่น รายงาน_ประจำเดือน.pdf">
+    </div>
+    <div class="form-row">
+      <label>แนบรูปงาน</label>
+      <div class="attach-area" onclick="document.getElementById('fImage').click()">
+        <div style="color:var(--gray3);font-size:13px">📎 คลิกเพื่อเลือกรูป (JPG, PNG, GIF)</div>
+        <input type="file" id="fImage" accept="image/*" onchange="previewImage(event)">
+      </div>
+      <div class="attach-preview" id="attachPreview"></div>
+    </div>
+    <div class="form-row">
+      <label>ลิงก์ไฟล์งาน</label>
+      <input type="text" id="fLink" placeholder="https://...">
+    </div>
+    <div class="form-row">
+      <label>หมายเหตุ</label>
+      <textarea id="fNote" placeholder="รายละเอียดเพิ่มเติม"></textarea>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeModal()">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveTask()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- PDF MODAL -->
+<div class="modal-bg" id="pdfModal">
+  <div class="modal" style="max-width:380px">
+    <h2>🖨️ เลือกหน้าที่จะ Print PDF</h2>
+    <div>
+      <label class="pdf-option" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f0f0f0;cursor:pointer"><input type="checkbox" id="pdfDash" checked style="width:18px;height:18px;accent-color:var(--purple)"> Dashboard สรุปภาพรวม</label>
+      <label class="pdf-option" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f0f0f0;cursor:pointer"><input type="checkbox" id="pdfTasks" checked style="width:18px;height:18px;accent-color:var(--purple)"> รายการงานทั้งหมด</label>
+      <label class="pdf-option" style="display:flex;align-items:center;gap:10px;padding:10px 0 0;cursor:pointer;padding-left:28px"><input type="checkbox" id="pdfIgnoreFilter" checked style="width:18px;height:18px;accent-color:var(--purple)"> <span style="font-size:13px;color:#666">แสดงทั้งหมด (ไม่ใช้ตัวกรองที่ค้างไว้)</span></label>
+      <label class="pdf-option" style="display:flex;align-items:center;gap:10px;padding:6px 0 10px;cursor:pointer;padding-left:28px"><input type="checkbox" id="pdfFullNote" style="width:18px;height:18px;accent-color:var(--purple)"> <span style="font-size:13px;color:#666">รวมหมายเหตุแบบเต็ม (เพิ่มหน้าท้ายเอกสาร)</span></label>
+      <label class="pdf-option" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid #f0f0f0;cursor:pointer"><input type="checkbox" id="pdfHistory" style="width:18px;height:18px;accent-color:var(--purple)"> History รายเดือน</label>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="document.getElementById('pdfModal').classList.remove('open')">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="doPrint()">พิมพ์ / บันทึก PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMAGE VIEWER -->
+<div class="img-modal-bg" id="imgViewer" onclick="this.classList.remove('open')">
+  <span class="close-img">×</span>
+  <img id="imgViewerSrc" src="" alt="">
+</div>
+
+<script>
+let tasks=JSON.parse(localStorage.getItem('mb_tasks')||'[]');
+let categories=JSON.parse(localStorage.getItem('mb_cats')||'["ETC","CUST","OFFICE","BHUDHO"]');
+let assigners=JSON.parse(localStorage.getItem('mb_assigners')||'["บอสบุ๊ค","บอสบุญ","ป้าจิ๋ม","ลุงบู้"]');
+let editId=null;
+let currentImageData=null;
+let sortCol='index', sortDir=1;
+
+function save(){
+  localStorage.setItem('mb_tasks',JSON.stringify(tasks));
+  localStorage.setItem('mb_cats',JSON.stringify(categories));
+  localStorage.setItem('mb_assigners',JSON.stringify(assigners));
+}
+
+// ============ SOUND ============
+function playAlertSound(){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const beep=(freq,start,dur)=>{
+      const o=ctx.createOscillator(); const g=ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type='sine'; o.frequency.value=freq;
+      g.gain.setValueAtTime(0,ctx.currentTime+start);
+      g.gain.linearRampToValueAtTime(0.3,ctx.currentTime+start+0.01);
+      g.gain.linearRampToValueAtTime(0,ctx.currentTime+start+dur);
+      o.start(ctx.currentTime+start); o.stop(ctx.currentTime+start+dur+0.05);
+    };
+    beep(880,0,0.15); beep(880,0.2,0.15); beep(1100,0.4,0.3);
+  }catch(e){}
+}
+
+// ============ NOTIFICATION ============
+let notiSoundPlayed=false;
+function checkNotifications(){
+  const today=new Date(); today.setHours(0,0,0,0);
+  const urgent=tasks.filter(t=>{
+    if(t.status==='เสร็จสิ้น') return false;
+    if(!t.deadline) return false;
+    const d=new Date(t.deadline); d.setHours(0,0,0,0);
+    const diff=Math.round((d-today)/86400000);
+    return diff<=3;
+  }).sort((a,b)=>new Date(a.deadline)-new Date(b.deadline));
+
+  const bar=document.getElementById('notiBar');
+  if(urgent.length===0){bar.style.display='none';return;}
+  document.getElementById('notiList').innerHTML=urgent.map(t=>{
+    const d=new Date(t.deadline); d.setHours(0,0,0,0);
+    const diff=Math.round((d-today)/86400000);
+    const label=diff<0?`เลยกำหนด ${Math.abs(diff)} วัน`:diff===0?'ครบกำหนดวันนี้':`อีก ${diff} วัน`;
+    return `• <strong>${t.name}</strong> — ${label} (${t.deadline})`;
+  }).join('<br>');
+  bar.style.display='block';
+  if(!notiSoundPlayed){notiSoundPlayed=true; playAlertSound();}
+}
+
+// ============ NAV ============
+function showPage(p,btn){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(p==='dashboard') renderDashboard();
+  if(p==='tasks'){renderTasks();populateFilters();}
+  if(p==='history') renderHistory();
+  if(p==='settings') renderSettings();
+}
+
+// ============ DASHBOARD ============
+function renderDashboard(){
+  checkNotifications();
+  const today=new Date(); today.setHours(0,0,0,0);
+  const total=tasks.length;
+  const done=tasks.filter(t=>t.status==='เสร็จสิ้น').length;
+  const inprog=tasks.filter(t=>t.status==='กำลังทำ').length;
+  const urgent=tasks.filter(t=>{
+    if(t.status==='เสร็จสิ้น'||!t.deadline) return false;
+    const d=new Date(t.deadline); d.setHours(0,0,0,0);
+    return Math.round((d-today)/86400000)<=3;
+  }).length;
+  const pct=total>0?Math.round(done/total*100):0;
+
+  document.getElementById('statsGrid').innerHTML=`
+    <div class="stat"><div class="num">${total}</div><div class="lbl">งานทั้งหมด</div></div>
+    <div class="stat green"><div class="num">${done}</div><div class="lbl">เสร็จแล้ว</div></div>
+    <div class="stat orange"><div class="num">${inprog}</div><div class="lbl">กำลังทำ</div></div>
+    <div class="stat red"><div class="num">${urgent}</div><div class="lbl">ใกล้/เลยกำหนด</div></div>
+    <div class="stat"><div class="num">${pct}%</div><div class="lbl">สำเร็จ</div>
+      <div class="progress-wrap"><div class="progress-bar" style="width:${pct}%"></div></div></div>`;
+
+  const canvas=document.getElementById('dashChart');
+  const ctx=canvas.getContext('2d');
+  const data=[
+    {label:'เสร็จสิ้น',val:done,color:'#11734b'},
+    {label:'กำลังทำ',val:inprog,color:'#8989eb'},
+    {label:'เริ่มต้น',val:tasks.filter(t=>t.status==='เริ่มต้น').length,color:'#f46524'},
+    {label:'วางแผน',val:tasks.filter(t=>t.status==='วางแผน').length,color:'#aaa'},
+    {label:'ยังไม่เริ่ม',val:tasks.filter(t=>t.status==='ยังไม่เริ่ม').length,color:'#e24b4a'},
+  ].filter(d=>d.val>0);
+  ctx.clearRect(0,0,220,220);
+  if(total===0){ctx.fillStyle='#eee';ctx.beginPath();ctx.arc(110,110,90,0,Math.PI*2);ctx.fill();}
+  else{
+    let start=0;
+    data.forEach(d=>{const s=(d.val/total)*Math.PI*2;ctx.beginPath();ctx.moveTo(110,110);ctx.arc(110,110,90,start,start+s);ctx.fillStyle=d.color;ctx.fill();start+=s;});
+    ctx.beginPath();ctx.arc(110,110,50,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();
+    ctx.fillStyle='#333';ctx.font='bold 18px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(pct+'%',110,110);
+  }
+  document.getElementById('chartLegend').innerHTML=data.map(d=>`<span style="display:inline-flex;align-items:center;gap:6px;margin-right:14px"><span style="width:12px;height:12px;border-radius:50%;background:${d.color};display:inline-block"></span>${d.label} (${d.val})</span>`).join('');
+
+  const todayTasks=tasks.filter(t=>{
+    if(t.status==='เสร็จสิ้น'||!t.deadline) return false;
+    const d=new Date(t.deadline); d.setHours(0,0,0,0);
+    return d<=today;
+  });
+  const todayEl=document.getElementById('todayList');
+  if(todayTasks.length===0) todayEl.innerHTML='<div style="color:#aaa;padding:16px 0;text-align:center">ไม่มีงานวันนี้ 🎉</div>';
+  else todayEl.innerHTML=todayTasks.map(t=>{
+    const d=new Date(t.deadline); d.setHours(0,0,0,0);
+    const overdue=d<today;
+    return `<div class="today-item"><div class="today-dot ${overdue?'overdue':'ok'}"></div>
+      <div><div style="font-weight:600">${t.name}</div>
+      <div style="font-size:12px;color:#888">${t.category||''} • ${overdue?'<span style="color:#c0392b">เลยกำหนด</span>':'วันนี้'}</div></div></div>`;
+  }).join('');
+
+  const urgentTasks=tasks.filter(t=>{
+    if(t.status==='เสร็จสิ้น'||!t.deadline) return false;
+    const d=new Date(t.deadline); d.setHours(0,0,0,0);
+    return Math.round((d-today)/86400000)<=3;
+  }).sort((a,b)=>new Date(a.deadline)-new Date(b.deadline));
+  const urgEl=document.getElementById('urgentList');
+  if(urgentTasks.length===0) urgEl.innerHTML='<div style="color:#aaa;padding:10px 0">ไม่มีงานที่น่าเป็นห่วง ✅</div>';
+  else urgEl.innerHTML=`<table style="width:100%"><thead><tr><th>ชื่องาน</th><th>หมวด</th><th>ผู้สั่งงาน</th><th>กำหนดส่ง</th><th>วันคงเหลือ</th></tr></thead><tbody>`+
+    urgentTasks.map(t=>{
+      const d=new Date(t.deadline); d.setHours(0,0,0,0);
+      const diff=Math.round((d-today)/86400000);
+      return `<tr><td><strong>${t.name}</strong></td><td>${t.category||'-'}</td><td>${t.assigner||'-'}</td><td>${t.deadline||'-'}</td>
+        <td><span style="color:${diff<0?'var(--red)':'var(--orange)'};font-weight:700">${diff<0?diff+'วัน':'อีก '+diff+' วัน'}</span></td></tr>`;
+    }).join('')+'</tbody></table>';
+}
+
+// ============ SORT ============
+function sortBy(col){
+  if(sortCol===col) sortDir*=-1;
+  else{sortCol=col;sortDir=1;}
+  document.querySelectorAll('.sort-icon').forEach(el=>el.textContent='');
+  const icon=document.getElementById('si-'+col);
+  if(icon) icon.textContent=sortDir===1?'▲':'▼';
+  renderTasks();
+}
+function applySort(list){
+  const priOrder={'ด่วน':0,'สูง':1,'ปานกลาง':2,'ต่ำ':3};
+  const statOrder={'ยังไม่เริ่ม':0,'วางแผน':1,'เริ่มต้น':2,'กำลังทำ':3,'เสร็จสิ้น':4};
+  list.sort((a,b)=>{
+    let va,vb;
+    if(sortCol==='index'){va=tasks.indexOf(a);vb=tasks.indexOf(b);}
+    else if(sortCol==='priority'){va=priOrder[a.priority]??9;vb=priOrder[b.priority]??9;}
+    else if(sortCol==='status'){va=statOrder[a.status]??9;vb=statOrder[b.status]??9;}
+    else if(sortCol==='percent'){va=a.percent||0;vb=b.percent||0;}
+    else if(sortCol==='deadline'||sortCol==='startDate'||sortCol==='completedAt'){
+      va=a[sortCol]?new Date(a[sortCol]).getTime():0;
+      vb=b[sortCol]?new Date(b[sortCol]).getTime():0;
+    }
+    else{va=(a[sortCol]||'').toString().toLowerCase();vb=(b[sortCol]||'').toString().toLowerCase();}
+    return va>vb?sortDir:va<vb?-sortDir:0;
+  });
+  return list;
+}
+
+// ============ TASKS ============
+function renderTasks(){
+  populateFilters();
+  const search=document.getElementById('searchInput').value.toLowerCase();
+  const cat=document.getElementById('filterCat').value;
+  const status=document.getElementById('filterStatus').value;
+  const priority=document.getElementById('filterPriority').value;
+  const assigner=document.getElementById('filterAssigner').value;
+
+  let filtered=tasks.filter(t=>{
+    if(search&&!t.name.toLowerCase().includes(search)) return false;
+    if(cat&&t.category!==cat) return false;
+    if(status&&t.status!==status) return false;
+    if(priority&&t.priority!==priority) return false;
+    if(assigner&&t.assigner!==assigner) return false;
+    return true;
+  });
+
+  applySort(filtered);
+
+  const tbody=document.getElementById('taskTable');
+  const empty=document.getElementById('taskEmpty');
+  if(filtered.length===0){tbody.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+
+  const today=new Date(); today.setHours(0,0,0,0);
+  tbody.innerHTML=filtered.map((t,i)=>{
+    const statusCls={'เสร็จสิ้น':'done','กำลังทำ':'inprog','เริ่มต้น':'start','วางแผน':'plan','ยังไม่เริ่ม':'notyet'}[t.status]||'plan';
+    const priCls={'ด่วน':'urgent','สูง':'high','ปานกลาง':'mid','ต่ำ':'low'}[t.priority]||'mid';
+    let dayLeft='-';
+    if(t.deadline){
+      const d=new Date(t.deadline); d.setHours(0,0,0,0);
+      const diff=Math.round((d-today)/86400000);
+      const color=diff<0?'var(--red)':diff<=3?'var(--orange)':'#555';
+      dayLeft=`<span style="color:${color};font-weight:${diff<=3?700:400}">${diff}</span>`;
+    }
+    const pct=t.percent||0;
+    const barColor=pct>=100?'#11734b':pct>=60?'#8989eb':'#f46524';
+
+    // file/image cell
+    let fileCell='';
+    if(t.imageData) fileCell+=`<img class="img-thumb" src="${t.imageData}" onclick="viewImg('${t.id}')" title="ดูรูป"> `;
+    if(t.fileName) fileCell+=`<span style="font-size:11px;background:#f0f0f0;padding:2px 6px;border-radius:4px;color:#555">📄 ${t.fileName}</span>`;
+    if(t.link) fileCell+=` <a href="${t.link}" target="_blank" style="font-size:11px;color:var(--purple)">🔗</a>`;
+    if(!fileCell) fileCell='-';
+
+    const completedAt=t.completedAt?`<span style="font-size:12px;color:var(--green)">${t.completedAt}</span>`:'-';
+
+    return `<tr>
+      <td class="sticky-col" style="white-space:nowrap">
+        <button class="btn btn-sm btn-ghost" onclick="editTask('${t.id}')">✏️</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteTask('${t.id}')">🗑</button>
+      </td>
+      <td style="color:#888">${i+1}</td>
+      <td><strong>${t.name}</strong></td>
+      <td><span class="badge" style="background:var(--purple-light);color:var(--purple-dark)">${t.category||'-'}</span></td>
+      <td><span class="badge ${statusCls}">${t.status||'-'}</span></td>
+      <td><span class="badge ${priCls}">${t.priority||'-'}</span></td>
+      <td style="white-space:nowrap;color:#888">${t.startDate||'-'}</td>
+      <td style="white-space:nowrap;color:#888">${t.deadline||'-'}</td>
+      <td style="text-align:center">${dayLeft}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+          <span style="font-size:12px;color:#555">${pct}%</span>
+        </div>
+      </td>
+      <td>${t.assigner||'-'}</td>
+      <td style="white-space:nowrap">${fileCell}</td>
+      <td style="white-space:nowrap">${completedAt}</td>
+      <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#888" title="${t.note||''}">${t.note||'-'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function viewImg(id){
+  const t=tasks.find(x=>x.id===id);
+  if(!t||!t.imageData) return;
+  document.getElementById('imgViewerSrc').src=t.imageData;
+  document.getElementById('imgViewer').classList.add('open');
+}
+
+function populateFilters(){
+  const catEl=document.getElementById('filterCat');
+  const asgEl=document.getElementById('filterAssigner');
+  const curCat=catEl.value, curAsg=asgEl.value;
+  catEl.innerHTML='<option value="">ทุกหมวดหมู่</option>'+categories.map(c=>`<option>${c}</option>`).join('');
+  asgEl.innerHTML='<option value="">ทุกผู้สั่งงาน</option>'+assigners.map(a=>`<option>${a}</option>`).join('');
+  catEl.value=curCat; asgEl.value=curAsg;
+}
+
+function clearFilters(){
+  document.getElementById('searchInput').value='';
+  ['filterCat','filterStatus','filterPriority','filterAssigner'].forEach(id=>document.getElementById(id).value='');
+  renderTasks();
+}
+
+// ============ HISTORY ============
+function renderHistory(){
+  const done=tasks.filter(t=>t.status==='เสร็จสิ้น').sort((a,b)=>new Date(b.deadline)-new Date(a.deadline));
+  const el=document.getElementById('historyContent');
+  if(done.length===0){el.innerHTML='<div class="empty"><span>📭</span>ยังไม่มีงานที่เสร็จสิ้น</div>';return;}
+  const grouped={};
+  done.forEach(t=>{
+    const d=t.deadline?new Date(t.deadline):new Date();
+    const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    const label=`${MONTHS[d.getMonth()]} ${d.getFullYear()+543}`;
+    if(!grouped[key]) grouped[key]={label,tasks:[]};
+    grouped[key].tasks.push(t);
+  });
+  el.innerHTML=Object.keys(grouped).sort().reverse().map(k=>{
+    const g=grouped[k];
+    return `<div class="month-group">
+      <div class="month-label">${g.label} — ${g.tasks.length} งาน</div>
+      <table style="width:100%"><thead><tr><th>#</th><th>ชื่องาน</th><th>หมวด</th><th>ผู้สั่งงาน</th><th>กำหนดส่ง</th><th>เสร็จจริงวันที่</th><th>ความสำคัญ</th></tr></thead>
+      <tbody>${g.tasks.map((t,i)=>`<tr>
+        <td style="color:#888">${i+1}</td><td><strong>${t.name}</strong></td>
+        <td><span class="badge" style="background:var(--purple-light);color:var(--purple-dark)">${t.category||'-'}</span></td>
+        <td>${t.assigner||'-'}</td><td>${t.deadline||'-'}</td>
+        <td style="color:var(--green)">${t.completedAt||'-'}</td>
+        <td><span class="badge ${{'ด่วน':'urgent','สูง':'high','ปานกลาง':'mid','ต่ำ':'low'}[t.priority]||'mid'}">${t.priority||'-'}</span></td>
+      </tr>`).join('')}</tbody></table></div>`;
+  }).join('');
+}
+
+// ============ SETTINGS ============
+function renderSettings(){
+  document.getElementById('catTags').innerHTML=categories.map(c=>
+    `<div class="tag-item">${c}<span class="del" onclick="deleteCat('${c}')">×</span></div>`).join('');
+  document.getElementById('assignerTags').innerHTML=assigners.map(a=>
+    `<div class="tag-item">${a}<span class="del" onclick="deleteAssigner('${a}')">×</span></div>`).join('');
+}
+function addCategory(){const v=document.getElementById('newCat').value.trim();if(!v||categories.includes(v)) return;categories.push(v);save();renderSettings();document.getElementById('newCat').value='';}
+function deleteCat(c){if(confirm('ลบหมวด "'+c+'"?')){categories=categories.filter(x=>x!==c);save();renderSettings();}}
+function addAssigner(){const v=document.getElementById('newAssigner').value.trim();if(!v||assigners.includes(v)) return;assigners.push(v);save();renderSettings();document.getElementById('newAssigner').value='';}
+function deleteAssigner(a){if(confirm('ลบผู้สั่งงาน "'+a+'"?')){assigners=assigners.filter(x=>x!==a);save();renderSettings();}}
+
+// ============ MODAL ============
+function handleStatusChange(){
+  const status=document.getElementById('fStatus').value;
+  const pctInput=document.getElementById('fPct');
+  const lockNote=document.getElementById('fPctLockNote');
+  if(status==='เสร็จสิ้น'){
+    pctInput.value=100;
+    document.getElementById('fPctLbl').textContent='100';
+    pctInput.disabled=true;
+    lockNote.style.display='inline';
+  } else {
+    pctInput.disabled=false;
+    lockNote.style.display='none';
+  }
+}
+function openAddModal(){
+  editId=null; currentImageData=null;
+  document.getElementById('modalTitle').textContent='เพิ่มงานใหม่';
+  clearForm();
+  document.getElementById('taskModal').classList.add('open');
+}
+function editTask(id){
+  const t=tasks.find(x=>x.id===id); if(!t) return;
+  editId=id; currentImageData=t.imageData||null;
+  document.getElementById('modalTitle').textContent='แก้ไขงาน';
+  populateModalDropdowns();
+  document.getElementById('fName').value=t.name||'';
+  document.getElementById('fCat').value=t.category||'';
+  document.getElementById('fAssigner').value=t.assigner||'';
+  document.getElementById('fStatus').value=t.status||'ยังไม่เริ่ม';
+  document.getElementById('fPriority').value=t.priority||'ปานกลาง';
+  document.getElementById('fStart').value=t.startDate||'';
+  document.getElementById('fDeadline').value=t.deadline||'';
+  document.getElementById('fPct').value=t.percent||0;
+  document.getElementById('fPctLbl').textContent=t.percent||0;
+  handleStatusChange();
+  document.getElementById('fFileName').value=t.fileName||'';
+  document.getElementById('fNote').value=t.note||'';
+  document.getElementById('fLink').value=t.link||'';
+  const prev=document.getElementById('attachPreview');
+  prev.innerHTML=t.imageData?`<img src="${t.imageData}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:1px solid #ddd">`:'' ;
+  document.getElementById('taskModal').classList.add('open');
+}
+function clearForm(){
+  populateModalDropdowns();
+  ['fName','fStart','fDeadline','fNote','fLink','fFileName'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fPct').value=0;
+  document.getElementById('fPctLbl').textContent='0';
+  document.getElementById('fStatus').value='ยังไม่เริ่ม';
+  document.getElementById('fPriority').value='ปานกลาง';
+  document.getElementById('attachPreview').innerHTML='';
+  document.getElementById('fImage').value='';
+  currentImageData=null;
+  handleStatusChange();
+}
+function populateModalDropdowns(){
+  document.getElementById('fCat').innerHTML='<option value="">-</option>'+categories.map(c=>`<option>${c}</option>`).join('');
+  document.getElementById('fAssigner').innerHTML='<option value="">-</option>'+assigners.map(a=>`<option>${a}</option>`).join('');
+}
+function closeModal(){document.getElementById('taskModal').classList.remove('open');}
+
+function previewImage(e){
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    currentImageData=ev.target.result;
+    document.getElementById('attachPreview').innerHTML=
+      `<img src="${currentImageData}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:1px solid #ddd">
+       <span style="font-size:12px;color:#888">${file.name}</span>
+       <button class="btn btn-sm btn-danger" onclick="removeImage()">ลบรูป</button>`;
+  };
+  reader.readAsDataURL(file);
+}
+function removeImage(){
+  currentImageData=null;
+  document.getElementById('attachPreview').innerHTML='';
+  document.getElementById('fImage').value='';
+}
+
+function saveTask(){
+  const name=document.getElementById('fName').value.trim();
+  if(!name){alert('กรุณากรอกชื่องาน');return;}
+  const newStatus=document.getElementById('fStatus').value;
+  const oldTask=editId?tasks.find(x=>x.id===editId):null;
+  const wasCompleted=oldTask&&oldTask.status==='เสร็จสิ้น';
+  const isNowCompleted=newStatus==='เสร็จสิ้น';
+  let completedAt=oldTask?oldTask.completedAt||'':'';
+  if(isNowCompleted&&!wasCompleted) completedAt=fmtDate(new Date());
+  if(!isNowCompleted) completedAt='';
+
+  const t={
+    id:editId||Date.now().toString(),
+    name, category:document.getElementById('fCat').value,
+    assigner:document.getElementById('fAssigner').value,
+    status:newStatus,
+    priority:document.getElementById('fPriority').value,
+    startDate:document.getElementById('fStart').value,
+    deadline:document.getElementById('fDeadline').value,
+    percent:parseInt(document.getElementById('fPct').value)||0,
+    fileName:document.getElementById('fFileName').value.trim(),
+    imageData:currentImageData,
+    link:document.getElementById('fLink').value,
+    note:document.getElementById('fNote').value,
+    completedAt,
+    updatedAt:new Date().toISOString()
+  };
+  if(editId) tasks=tasks.map(x=>x.id===editId?t:x);
+  else tasks.push(t);
+  save(); closeModal(); renderTasks(); renderDashboard(); checkNotifications();
+}
+function deleteTask(id){
+  if(!confirm('ลบงานนี้?')) return;
+  tasks=tasks.filter(t=>t.id!==id); save(); renderTasks(); renderDashboard(); checkNotifications();
+}
+
+// ============ EXPORT ============
+function exportJSON(){
+  const d={tasks,categories,assigners,exportedAt:new Date().toISOString()};
+  dl(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}),'manybear-backup-'+fmt(new Date())+'.json');
+}
+function importJSON(e){
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const d=JSON.parse(ev.target.result);
+      if(d.tasks) tasks=d.tasks;
+      if(d.categories) categories=d.categories;
+      if(d.assigners) assigners=d.assigners;
+      save(); renderSettings(); renderDashboard(); checkNotifications();
+      alert('นำเข้าข้อมูลสำเร็จ! มี '+tasks.length+' งาน');
+    }catch(err){alert('ไฟล์ไม่ถูกต้อง');}
+  };
+  reader.readAsText(file);
+}
+function exportCSV(){
+  const headers=['ID','ชื่องาน','หมวดหมู่','สถานะ','ความสำคัญ','วันเริ่ม','กำหนดส่ง','%งาน','ผู้สั่งงาน','ชื่อไฟล์','ลิงก์','เสร็จจริงวันที่','หมายเหตุ'];
+  const rows=tasks.map(t=>[t.id,t.name,t.category,t.status,t.priority,t.startDate,t.deadline,t.percent,t.assigner,t.fileName,t.link,t.completedAt,t.note].map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`));
+  dl(new Blob(['\uFEFF'+[headers,...rows].map(r=>r.join(',')).join('\n')],{type:'text/csv;charset=utf-8'}),'manybear-tasks-'+fmt(new Date())+'.csv');
+}
+function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();}
+function clearAll(){if(confirm('ล้างข้อมูลทั้งหมด? ไม่สามารถกู้คืนได้!')){tasks=[];save();renderDashboard();renderSettings();checkNotifications();alert('ล้างข้อมูลเรียบร้อย');}}
+
+// ============ PDF / PRINT ============
+function openPdfModal(){document.getElementById('pdfModal').classList.add('open');}
+
+function getFilteredTasks(){
+  const search=(document.getElementById('searchInput')||{value:''}).value.toLowerCase();
+  const cat=(document.getElementById('filterCat')||{value:''}).value;
+  const status=(document.getElementById('filterStatus')||{value:''}).value;
+  const priority=(document.getElementById('filterPriority')||{value:''}).value;
+  const assigner=(document.getElementById('filterAssigner')||{value:''}).value;
+  return tasks.filter(t=>{
+    if(search&&!t.name.toLowerCase().includes(search)) return false;
+    if(cat&&t.category!==cat) return false;
+    if(status&&t.status!==status) return false;
+    if(priority&&t.priority!==priority) return false;
+    if(assigner&&t.assigner!==assigner) return false;
+    return true;
+  });
+}
+
+function buildFilterLabel(){
+  const parts=[];
+  const cat=(document.getElementById('filterCat')||{value:''}).value;
+  const status=(document.getElementById('filterStatus')||{value:''}).value;
+  const priority=(document.getElementById('filterPriority')||{value:''}).value;
+  const assigner=(document.getElementById('filterAssigner')||{value:''}).value;
+  const search=(document.getElementById('searchInput')||{value:''}).value;
+  if(cat) parts.push('หมวด: '+cat);
+  if(status) parts.push('สถานะ: '+status);
+  if(priority) parts.push('ความสำคัญ: '+priority);
+  if(assigner) parts.push('ผู้สั่งงาน: '+assigner);
+  if(search) parts.push('ค้นหา: "'+search+'"');
+  return parts.length?'ตัวกรอง: '+parts.join(' | '):'แสดงทั้งหมด';
+}
+
+function doPrint(){
+  document.getElementById('pdfModal').classList.remove('open');
+  const showDash=document.getElementById('pdfDash').checked;
+  const showTasks=document.getElementById('pdfTasks').checked;
+  const showHist=document.getElementById('pdfHistory').checked;
+  const ignoreFilter=document.getElementById('pdfIgnoreFilter').checked;
+  const fullNote=document.getElementById('pdfFullNote').checked;
+  const filteredTasks=applySort(ignoreFilter ? tasks.slice() : getFilteredTasks());
+  const filterLabel=ignoreFilter ? 'แสดงทั้งหมด (ไม่ใช้ตัวกรอง)' : buildFilterLabel();
+  const now=new Date();
+  const printDate=now.toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'});
+  const printTime=now.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+  const printDateTime=printDate+' เวลา '+printTime+' น.';
+  const NOTE_LIMIT=50;
+  const overflowNotes=[]; // {name, note} for full-note appendix
+
+  function noteCell(t){
+    if(!t.note) return '-';
+    if(t.note.length<=NOTE_LIMIT) return t.note;
+    if(fullNote){ overflowNotes.push({name:t.name, note:t.note}); }
+    return t.note.slice(0,NOTE_LIMIT)+'…'+(fullNote?' <sup style="color:#8989eb">*</sup>':'');
+  }
+
+  const old=document.getElementById('printArea'); if(old) old.remove();
+  const div=document.createElement('div');
+  div.id='printArea';
+  div.style.cssText='position:static;width:100%;background:#fff;z-index:9999;padding:0;display:none';
+
+  const css=`<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Sarabun',Arial,sans-serif;font-size:11px;background:#fff;color:#1f1f1f;
+         -webkit-font-smoothing:antialiased}
+    .print-page{padding:12mm 12mm 8mm;page-break-after:always;position:relative}
+    .print-page:last-child{page-break-after:auto}
+    .section-tag{position:absolute;top:6mm;right:12mm;font-size:8.5px;color:#aaa}
+    h1{color:#5a5ab8;font-size:16px;margin-bottom:3px;font-family:'Sarabun',Arial,sans-serif}
+    h2{color:#5a5ab8;font-size:12px;margin:0 0 8px;padding-bottom:5px;border-bottom:2px solid #8989eb;font-family:'Sarabun',Arial,sans-serif}
+    h3{color:#5a5ab8;font-size:11px;margin:10px 0 4px;font-family:'Sarabun',Arial,sans-serif}
+    .meta{font-size:9.5px;color:#888;margin-bottom:12px}
+    .filter-tag{display:inline-block;background:#e8e7fc;color:#5a5ab8;padding:1px 7px;border-radius:8px;font-size:9px;margin-left:5px}
+    .stat-row{display:flex;gap:8px;margin:8px 0 14px}
+    .sbox{flex:1;border:1.5px solid #c5c5f0;border-radius:6px;padding:7px 4px;text-align:center}
+    .snum{font-size:20px;font-weight:700;color:#8989eb}
+    .snum.green{color:#11734b}.snum.orange{color:#f46524}.snum.red{color:#c0392b}
+    .slbl{font-size:9px;color:#888;margin-top:2px}
+    table{width:100%;border-collapse:collapse;font-size:9px;margin-bottom:6px;table-layout:fixed;font-family:'Sarabun',Arial,sans-serif}
+    thead{display:table-header-group}
+    th{background:#8989eb;color:#fff;padding:4px 5px;text-align:left;font-weight:700;overflow:hidden;word-break:break-word}
+    td{padding:3px 5px;border-bottom:1px solid #ebebeb;vertical-align:top;overflow:hidden;word-break:break-word;line-height:1.4}
+    tr:nth-child(even) td{background:#f9f9ff}
+    tr{page-break-inside:avoid}
+    .badge-done{color:#11734b;font-weight:700}
+    .badge-inprog{color:#0a53a8;font-weight:700}
+    .badge-urgent{color:#b10202;font-weight:700}
+    .badge-high{color:#c0392b;font-weight:600}
+    .badge-mid{color:#473821}
+    .badge-low{color:#11734b}
+    .month-head{background:#e8e7fc;color:#5a5ab8;padding:4px 8px;font-weight:700;font-size:10px;margin:10px 0 3px;border-left:4px solid #8989eb}
+    .row-overdue td{background:#fff0f0!important}
+    .attach-ico{font-size:10px;margin-left:3px}
+    .note-appendix-item{margin-bottom:10px;padding-bottom:8px;border-bottom:1px dashed #ddd}
+    .note-appendix-item b{color:#5a5ab8}
+    .sign-box{display:flex;gap:30px;margin-top:50px}
+    .sign-box .col{flex:1;font-size:10px}
+    .sign-line{margin-top:36px;border-top:1px solid #999;padding-top:4px;color:#888}
+    @page{size:A4 landscape;margin:0}
+    @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}.print-page{page-break-after:always}.print-page:last-child{page-break-after:auto}}
+  </style>`;
+
+  let sections=[];
+
+  if(showDash){
+    const today=new Date(); today.setHours(0,0,0,0);
+    const total=tasks.length,done=tasks.filter(t=>t.status==='เสร็จสิ้น').length;
+    const inprog=tasks.filter(t=>t.status==='กำลังทำ').length;
+    const urg=tasks.filter(t=>{if(t.status==='เสร็จสิ้น'||!t.deadline) return false;const d=new Date(t.deadline);d.setHours(0,0,0,0);return Math.round((d-today)/86400000)<=3;}).length;
+    const pct=total>0?Math.round(done/total*100):0;
+    const urgList=tasks.filter(t=>{if(t.status==='เสร็จสิ้น'||!t.deadline) return false;const d=new Date(t.deadline);d.setHours(0,0,0,0);return Math.round((d-today)/86400000)<=3;}).sort((a,b)=>new Date(a.deadline)-new Date(b.deadline));
+
+    // สรุปงานตามผู้สั่งงาน
+    const aStats={};
+    tasks.forEach(t=>{const a=t.assigner||'ไม่ระบุ';if(!aStats[a])aStats[a]={total:0,done:0};aStats[a].total++;if(t.status==='เสร็จสิ้น')aStats[a].done++;});
+    const aRows=Object.keys(aStats).sort().map(a=>`<tr><td><strong>${a}</strong></td><td style="text-align:center">${aStats[a].total}</td><td style="text-align:center" class="badge-done">${aStats[a].done}</td><td style="text-align:center">${aStats[a].total-aStats[a].done}</td></tr>`).join('');
+
+    sections.push(`
+      <h1>🐻 MANYBEAR WORK APP</h1>
+      <div class="meta">Dashboard สรุปภาพรวม &nbsp;•&nbsp; พิมพ์เมื่อ: ${printDateTime}</div>
+      <h2>📊 สถิติภาพรวม</h2>
+      <div class="stat-row">
+        <div class="sbox"><div class="snum">${total}</div><div class="slbl">งานทั้งหมด</div></div>
+        <div class="sbox"><div class="snum green">${done}</div><div class="slbl">เสร็จแล้ว</div></div>
+        <div class="sbox"><div class="snum orange">${inprog}</div><div class="slbl">กำลังทำ</div></div>
+        <div class="sbox"><div class="snum red">${urg}</div><div class="slbl">ใกล้/เลยกำหนด</div></div>
+        <div class="sbox"><div class="snum">${pct}%</div><div class="slbl">สำเร็จโดยรวม</div></div>
+      </div>
+      ${urgList.length?`<h2>🚨 งานที่ต้องเร่ง (≤3 วัน)</h2>
+      <table><colgroup><col style="width:4%"><col style="width:30%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:15%"><col style="width:15%"></colgroup>
+      <thead><tr><th>#</th><th>ชื่องาน</th><th>หมวด</th><th>สถานะ</th><th>ผู้สั่งงาน</th><th>กำหนดส่ง</th><th>วันคงเหลือ</th></tr></thead><tbody>`+
+      urgList.map((t,i)=>{const d=new Date(t.deadline);d.setHours(0,0,0,0);const diff=Math.round((d-today)/86400000);const cls=diff<0?'row-overdue':'';
+        return `<tr class="${cls}"><td>${i+1}</td><td><strong>${t.name}</strong></td><td>${t.category||'-'}</td><td>${t.status||'-'}</td><td>${t.assigner||'-'}</td><td>${t.deadline}</td><td style="color:${diff<0?'#b10202':'#c0392b'};font-weight:700">${diff<0?diff+'วัน':'อีก '+diff+' วัน'}</td></tr>`;
+      }).join('')+'</tbody></table>':''}
+      <h2 style="margin-top:14px">📋 สรุปงานตามผู้สั่งงาน</h2>
+      <table><colgroup><col style="width:40%"><col style="width:20%"><col style="width:20%"><col style="width:20%"></colgroup>
+      <thead><tr><th>ผู้สั่งงาน</th><th style="text-align:center">งานทั้งหมด</th><th style="text-align:center">เสร็จแล้ว</th><th style="text-align:center">ยังไม่เสร็จ</th></tr></thead>
+      <tbody>${aRows}</tbody></table>
+    `);
+  }
+
+  if(showTasks){
+    const today=new Date(); today.setHours(0,0,0,0);
+    sections.push(`
+      <h1>🐻 MANYBEAR WORK APP</h1>
+      <div class="meta">รายการงาน &nbsp;•&nbsp; พิมพ์เมื่อ: ${printDateTime} &nbsp;<span class="filter-tag">${filterLabel}</span> &nbsp;• แสดง ${filteredTasks.length} รายการ${fullNote?' • หมายเหตุยาวดูเพิ่มท้ายเอกสาร (*)':''}</div>
+      <h2>🗂️ รายการงานทั้งหมด</h2>
+      ${!filteredTasks.length?'<p style="color:#aaa;padding:20px 0">ไม่มีรายการงานที่ตรงกับตัวกรอง</p>':
+      `<table><colgroup><col style="width:3%"><col style="width:22%"><col style="width:7%"><col style="width:8%"><col style="width:7%"><col style="width:7%"><col style="width:7%"><col style="width:5%"><col style="width:4%"><col style="width:9%"><col style="width:9%"><col style="width:12%"></colgroup>
+      <thead><tr><th>#</th><th>ชื่องาน</th><th>หมวด</th><th>สถานะ</th><th>ความสำคัญ</th><th>วันเริ่ม</th><th>กำหนดส่ง</th><th>วันเหลือ</th><th>%</th><th>ผู้สั่งงาน</th><th>เสร็จจริงวันที่</th><th>หมายเหตุ</th></tr></thead><tbody>`+
+      filteredTasks.map((t,i)=>{
+        const priCls={'ด่วน':'badge-urgent','สูง':'badge-high','ปานกลาง':'badge-mid','ต่ำ':'badge-low'}[t.priority]||'';
+        const stCls={'เสร็จสิ้น':'badge-done','กำลังทำ':'badge-inprog','ด่วน':'badge-urgent'}[t.status]||'';
+        let dayLeft='-';
+        if(t.deadline&&t.status!=='เสร็จสิ้น'){const d=new Date(t.deadline);d.setHours(0,0,0,0);const diff=Math.round((d-today)/86400000);dayLeft=`<span style="color:${diff<0?'#b10202':diff<=3?'#c0392b':'#444'};font-weight:${diff<=3?700:400}">${diff}</span>`;}
+        const rowCls=t.deadline&&t.status!=='เสร็จสิ้น'&&Math.round((new Date(t.deadline).setHours(0,0,0,0)-today)/86400000)<0?'row-overdue':'';
+        const attach=(t.fileName?'📎':'')+(t.imageData?'🖼️':'');
+        const completedDate=t.completedAt?new Date(t.completedAt).toLocaleDateString('th-TH'):'-';
+        return `<tr class="${rowCls}"><td>${i+1}</td><td><strong>${t.name}</strong>${attach?` <span class="attach-ico" title="${t.fileName||''}">${attach}</span>`:''}</td><td>${t.category||'-'}</td><td class="${stCls}">${t.status||'-'}</td><td class="${priCls}">${t.priority||'-'}</td><td>${t.startDate||'-'}</td><td>${t.deadline||'-'}</td><td style="text-align:center">${dayLeft}</td><td>${t.percent||0}%</td><td>${t.assigner||'-'}</td><td>${completedDate}</td><td>${noteCell(t)}</td></tr>`;
+      }).join('')+'</tbody></table>'}
+    `);
+  }
+
+  if(showHist){
+    const done2=tasks.filter(t=>t.status==='เสร็จสิ้น');
+    const g={};
+    done2.forEach(t=>{const d=t.deadline?new Date(t.deadline):new Date();const k=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;if(!g[k]){g[k]={label:`${MONTHS[d.getMonth()]} ${d.getFullYear()+543}`,tasks:[]};}g[k].tasks.push(t);});
+    const histHtml=Object.keys(g).sort().reverse().map(k=>`
+      <div class="month-head">${g[k].label} — ${g[k].tasks.length} งาน</div>
+      <table><colgroup><col style="width:4%"><col style="width:28%"><col style="width:10%"><col style="width:10%"><col style="width:10%"><col style="width:10%"><col style="width:10%"><col style="width:18%"></colgroup>
+      <thead><tr><th>#</th><th>ชื่องาน</th><th>หมวด</th><th>สถานะ</th><th>ความสำคัญ</th><th>ผู้สั่งงาน</th><th>กำหนดส่ง</th><th>เสร็จจริงวันที่</th></tr></thead><tbody>`+
+      g[k].tasks.map((t,i)=>`<tr><td>${i+1}</td><td><strong>${t.name}</strong></td><td>${t.category||'-'}</td><td class="badge-done">${t.status}</td><td>${t.priority||'-'}</td><td>${t.assigner||'-'}</td><td>${t.deadline||'-'}</td><td class="badge-done">${t.completedAt?new Date(t.completedAt).toLocaleDateString('th-TH'):'-'}</td></tr>`).join('')+
+      '</tbody></table>'
+    ).join('');
+    sections.push(`
+      <h1>🐻 MANYBEAR WORK APP</h1>
+      <div class="meta">History รายเดือน &nbsp;•&nbsp; พิมพ์เมื่อ: ${printDateTime} &nbsp;•&nbsp; งานเสร็จสิ้น ${done2.length} รายการ</div>
+      <h2>📅 ประวัติงานที่เสร็จสิ้น (รายเดือน)</h2>
+      ${done2.length===0?'<p style="color:#aaa;padding:20px 0">ยังไม่มีงานเสร็จสิ้น</p>':histHtml}
+    `);
+  }
+
+  if(sections.length===0){alert('กรุณาเลือกอย่างน้อยหนึ่งหน้า');return;}
+
+  // หน้าหมายเหตุแบบเต็ม (ถ้าเลือกไว้ และมีหมายเหตุที่ถูกตัด)
+  if(fullNote && overflowNotes.length){
+    sections.push(`
+      <h1>🐻 MANYBEAR WORK APP</h1>
+      <div class="meta">หมายเหตุแบบเต็ม &nbsp;•&nbsp; พิมพ์เมื่อ: ${printDateTime}</div>
+      <h2>📝 หมายเหตุฉบับเต็ม (${overflowNotes.length} รายการ)</h2>
+      ${overflowNotes.map(o=>`<div class="note-appendix-item"><b>${o.name}</b><div style="margin-top:3px">${o.note}</div></div>`).join('')}
+    `);
+  }
+
+  // ช่องลงชื่อรับทราบ — แนบไว้ท้ายเอกสารส่วนสุดท้าย (ไม่ขึ้นหน้าใหม่)
+  sections[sections.length-1] += `
+    <div class="sign-box">
+      <div class="col">ผู้จัดทำ<div class="sign-line">ลงชื่อ.......................................... วันที่........../........../...........</div></div>
+      <div class="col">ผู้ตรวจสอบ/รับทราบ<div class="sign-line">ลงชื่อ.......................................... วันที่........../........../...........</div></div>
+    </div>`;
+
+  const fullHtml=css+sections.map((s,i)=>`<div class="print-page"><span class="section-tag">ส่วนที่ ${i+1}/${sections.length}</span>${s}</div>`).join('');
+  div.innerHTML=fullHtml;
+  document.body.appendChild(div);
+  div.style.display='block';
+  setTimeout(()=>{window.print();setTimeout(()=>div.remove(),600);},150);
+}
+
+// ============ HELPERS ============
+const MONTHS=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+function fmt(d){return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;}
+function fmtDate(d){return `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()+543}`;}
+
+// ============ INIT ============
+renderDashboard();
+populateFilters();
+checkNotifications();
+
+// ============ PWA SERVICE WORKER ============
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.js')
+      .then(r=>console.log('SW registered'))
+      .catch(e=>console.log('SW error',e));
+  });
+}
+</script>
+</body>
+</html>
