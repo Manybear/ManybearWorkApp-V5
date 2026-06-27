@@ -1,7 +1,9 @@
 // Manybear Work App — Service Worker
 // ทำให้แอปเปิดได้แม้ไม่มีอินเทอร์เน็ต (ข้อมูลงานยังเก็บที่ localStorage ของเครื่องเหมือนเดิม)
+// กลยุทธ์: NETWORK-FIRST — พยายามดึงไฟล์ใหม่จากเน็ตก่อนเสมอ ถ้าไม่มีเน็ตค่อย fallback ไปใช้แคชเก่า
+// แบบนี้ทุกครั้งที่อัปเดต index.html ใหม่บน GitHub ผู้ใช้จะเห็นเวอร์ชันล่าสุดทันทีที่เปิดแอป (ตอนมีเน็ต)
 
-const CACHE_NAME = 'manybear-cache-v1';
+const CACHE_NAME = 'manybear-cache-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -27,16 +29,16 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request).then((response) => {
-        if (response && response.status === 200 && event.request.method === 'GET') {
+    fetch(event.request)
+      .then((response) => {
+        if (response && response.status === 200) {
           const clone = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
         }
         return response;
-      }).catch(() => cached);
-    })
+      })
+      .catch(() => caches.match(event.request))
   );
 });
