@@ -216,6 +216,7 @@ tr:hover td{background:#fafafa}
           <th>ไฟล์/รูป</th>
           <th onclick="sortBy('completedAt')">เสร็จจริงวันที่ <span class="sort-icon" id="si-completedAt"></span></th>
           <th>หมายเหตุ</th>
+          <th>อัพเดท</th>
         </tr></thead>
         <tbody id="taskTable"></tbody>
       </table>
@@ -333,6 +334,12 @@ tr:hover td{background:#fafafa}
       <label>หมายเหตุ</label>
       <textarea id="fNote" placeholder="รายละเอียดเพิ่มเติม"></textarea>
     </div>
+    <div class="form-row" id="formUpdateSection" style="display:none;border-top:1px solid #eee;padding-top:14px;margin-top:6px">
+      <label>📝 อัพเดทงานรายวัน</label>
+      <div id="formUpdateList" style="max-height:200px;overflow-y:auto;border:1px solid #eee;border-radius:8px;padding:8px;margin-bottom:8px"></div>
+      <textarea id="formNewUpdateText" placeholder="พิมพ์อัพเดทใหม่... เช่น เพิ่มงานทำต่ออีก 3 วัน" style="width:100%;min-height:50px;padding:8px;border:1px solid #ccc;border-radius:6px;font-family:inherit;resize:vertical"></textarea>
+      <button type="button" class="btn btn-sm btn-primary" style="margin-top:6px" onclick="addUpdateText(editId,'formNewUpdateText')">+ เพิ่มอัพเดท</button>
+    </div>
     <div class="modal-btns">
       <button class="btn btn-ghost" onclick="closeModal()">ยกเลิก</button>
       <button class="btn btn-primary" onclick="saveTask()">บันทึก</button>
@@ -354,6 +361,23 @@ tr:hover td{background:#fafafa}
     <div class="modal-btns">
       <button class="btn btn-ghost" onclick="document.getElementById('pdfModal').classList.remove('open')">ยกเลิก</button>
       <button class="btn btn-primary" onclick="doPrint()">พิมพ์ / บันทึก PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- UPDATE LOG MODAL -->
+<div class="modal-bg" id="updateModal">
+  <div class="modal" style="max-width:480px">
+    <h3 style="margin-bottom:4px">📝 อัพเดทงานรายวัน</h3>
+    <div id="updateModalTaskName" style="font-weight:700;color:var(--purple);margin-bottom:10px"></div>
+    <div id="updateModalList" style="max-height:280px;overflow-y:auto;margin-bottom:12px"></div>
+    <div class="form-row">
+      <label>เพิ่มอัพเดทใหม่</label>
+      <textarea id="newUpdateText" placeholder="เช่น เพิ่มงานทำต่ออีก 3 วัน" style="width:100%;min-height:60px;padding:8px;border:1px solid #ccc;border-radius:6px;font-family:inherit;resize:vertical"></textarea>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeUpdateModal()">ปิด</button>
+      <button class="btn btn-primary" onclick="addUpdateText(currentUpdateTaskId,'newUpdateText')">บันทึกอัพเดท</button>
     </div>
   </div>
 </div>
@@ -579,6 +603,7 @@ function renderTasks(){
     if(!fileCell) fileCell='-';
 
     const completedAt=t.completedAt?`<span style="font-size:12px;color:var(--green)">${t.completedAt}</span>`:'-';
+    const updCount=(t.updates||[]).length;
 
     return `<tr>
       <td class="sticky-col" style="white-space:nowrap">
@@ -603,6 +628,9 @@ function renderTasks(){
       <td style="white-space:nowrap">${fileCell}</td>
       <td style="white-space:nowrap">${completedAt}</td>
       <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#888" title="${t.note||''}">${t.note||'-'}</td>
+      <td style="white-space:nowrap;text-align:center">
+        <button class="btn btn-sm btn-ghost" onclick="openUpdateModal('${t.id}')" title="ดู/เพิ่มอัพเดท">📝${updCount?' ('+updCount+')':''}</button>
+      </td>
     </tr>`;
   }).join('');
 }
@@ -684,6 +712,83 @@ function handleStatusChange(){
     lockNote.style.display='none';
   }
 }
+
+// ============ DAILY UPDATE LOG ============
+let currentUpdateTaskId=null, editingUpdateId=null;
+function fmtUpdateDate(iso){
+  const d=new Date(iso);
+  return d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'})+' '+d.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+}
+function buildUpdatesListHTML(taskId){
+  const t=tasks.find(x=>x.id===taskId);
+  if(!t) return '';
+  const list=(t.updates||[]).slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if(!list.length) return '<div style="color:#aaa;font-size:13px;padding:10px 0">ยังไม่มีอัพเดท</div>';
+  return list.map(u=>{
+    if(editingUpdateId===u.id){
+      return `<div class="update-item" style="background:#f6f6ff;border-radius:8px;padding:8px;margin-bottom:8px">
+        <textarea id="editUpdText-${u.id}" style="width:100%;min-height:50px;padding:6px;border:1px solid #ccc;border-radius:6px;font-family:inherit">${u.text}</textarea>
+        <div style="margin-top:6px;display:flex;gap:6px">
+          <button class="btn btn-sm btn-primary" onclick="saveUpdateEdit('${taskId}','${u.id}')">บันทึก</button>
+          <button class="btn btn-sm btn-ghost" onclick="editingUpdateId=null;refreshUpdatesUI()">ยกเลิก</button>
+        </div>
+      </div>`;
+    }
+    return `<div class="update-item" style="border-bottom:1px solid #f0f0f0;padding:8px 0">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div style="flex:1">
+          <div style="font-size:12px;color:#8989eb;font-weight:600">${fmtUpdateDate(u.date)} ${u.editedAt?'<span style="color:#aaa;font-weight:400">(แก้ไขแล้ว)</span>':''}</div>
+          <div style="font-size:13px;margin-top:2px;white-space:pre-wrap">${u.text}</div>
+        </div>
+        <button class="btn btn-sm btn-ghost" onclick="editingUpdateId='${u.id}';refreshUpdatesUI()" title="แก้ไข">✏️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function refreshUpdatesUI(){
+  if(document.getElementById('updateModalList') && currentUpdateTaskId){
+    document.getElementById('updateModalList').innerHTML=buildUpdatesListHTML(currentUpdateTaskId);
+  }
+  if(document.getElementById('formUpdateList') && editId){
+    document.getElementById('formUpdateList').innerHTML=buildUpdatesListHTML(editId);
+  }
+}
+function addUpdateText(taskId, inputId){
+  const input=document.getElementById(inputId);
+  const text=input.value.trim();
+  if(!text) return;
+  const t=tasks.find(x=>x.id===taskId); if(!t) return;
+  if(!t.updates) t.updates=[];
+  t.updates.push({id:Date.now().toString()+Math.random().toString(36).slice(2,6), date:new Date().toISOString(), text, editedAt:null});
+  save();
+  input.value='';
+  refreshUpdatesUI();
+  renderTasks();
+}
+function saveUpdateEdit(taskId,updId){
+  const ta=document.getElementById('editUpdText-'+updId);
+  const newText=ta.value.trim();
+  if(!newText) return;
+  const t=tasks.find(x=>x.id===taskId); if(!t) return;
+  const u=(t.updates||[]).find(x=>x.id===updId); if(!u) return;
+  if(newText!==u.text){ u.text=newText; u.editedAt=new Date().toISOString(); }
+  editingUpdateId=null;
+  save();
+  refreshUpdatesUI();
+}
+function openUpdateModal(taskId){
+  currentUpdateTaskId=taskId;
+  editingUpdateId=null;
+  const t=tasks.find(x=>x.id===taskId); if(!t) return;
+  document.getElementById('updateModalTaskName').textContent=t.name;
+  document.getElementById('updateModalList').innerHTML=buildUpdatesListHTML(taskId);
+  document.getElementById('newUpdateText').value='';
+  document.getElementById('updateModal').classList.add('open');
+}
+function closeUpdateModal(){
+  document.getElementById('updateModal').classList.remove('open');
+  currentUpdateTaskId=null; editingUpdateId=null;
+}
 function openAddModal(){
   editId=null; currentImageData=null;
   document.getElementById('modalTitle').textContent='เพิ่มงานใหม่';
@@ -710,6 +815,10 @@ function editTask(id){
   document.getElementById('fLink').value=t.link||'';
   const prev=document.getElementById('attachPreview');
   prev.innerHTML=t.imageData?`<img src="${t.imageData}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:1px solid #ddd">`:'' ;
+  editingUpdateId=null;
+  document.getElementById('formUpdateSection').style.display='block';
+  document.getElementById('formUpdateList').innerHTML=buildUpdatesListHTML(id);
+  document.getElementById('formNewUpdateText').value='';
   document.getElementById('taskModal').classList.add('open');
 }
 function clearForm(){
@@ -723,6 +832,7 @@ function clearForm(){
   document.getElementById('fImage').value='';
   currentImageData=null;
   handleStatusChange();
+  document.getElementById('formUpdateSection').style.display='none';
 }
 function populateModalDropdowns(){
   document.getElementById('fCat').innerHTML='<option value="">-</option>'+categories.map(c=>`<option>${c}</option>`).join('');
@@ -773,6 +883,7 @@ function saveTask(){
     link:document.getElementById('fLink').value,
     note:document.getElementById('fNote').value,
     completedAt,
+    updates:oldTask?(oldTask.updates||[]):[],
     updatedAt:new Date().toISOString()
   };
   if(editId) tasks=tasks.map(x=>x.id===editId?t:x);
