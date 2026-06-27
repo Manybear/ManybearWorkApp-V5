@@ -44,6 +44,8 @@ nav .logo{font-size:18px;font-weight:700;letter-spacing:1px;flex:1}
 .tbl-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:13px}
 .sticky-col{position:sticky;left:0;box-shadow:2px 0 5px rgba(0,0,0,.08)}
+.task-link{cursor:pointer;color:inherit;text-decoration:none;border-bottom:1px dashed transparent;transition:color .15s}
+.task-link:hover{color:var(--purple);border-bottom-color:var(--purple)}
 th.sticky-col{background:var(--purple);z-index:6;cursor:default}
 td.sticky-col{background:#fff;z-index:5}
 tr:nth-child(even) td.sticky-col{background:#f9f9ff}
@@ -523,7 +525,7 @@ function renderDashboard(){
     urgentTasks.map(t=>{
       const d=new Date(t.deadline); d.setHours(0,0,0,0);
       const diff=Math.round((d-today)/86400000);
-      return `<tr><td><strong>${t.name}</strong></td><td>${t.category||'-'}</td><td>${t.assigner||'-'}</td><td>${t.deadline||'-'}</td>
+      return `<tr><td><strong class="task-link" onclick="editTask('${t.id}')" title="คลิกเพื่อแก้ไขงานนี้">${t.name}</strong></td><td>${t.category||'-'}</td><td>${t.assigner||'-'}</td><td>${t.deadline||'-'}</td>
         <td><span style="color:${diff<0?'var(--red)':'var(--orange)'};font-weight:700">${diff<0?diff+'วัน':'อีก '+diff+' วัน'}</span></td></tr>`;
     }).join('')+'</tbody></table>';
 }
@@ -611,7 +613,7 @@ function renderTasks(){
         <button class="btn btn-sm btn-danger" onclick="deleteTask('${t.id}')">🗑</button>
       </td>
       <td style="color:#888">${i+1}</td>
-      <td><strong>${t.name}</strong></td>
+      <td><strong class="task-link" onclick="editTask('${t.id}')" title="คลิกเพื่อแก้ไขงานนี้">${t.name}</strong></td>
       <td><span class="badge" style="background:var(--purple-light);color:var(--purple-dark)">${t.category||'-'}</span></td>
       <td><span class="badge ${statusCls}">${t.status||'-'}</span></td>
       <td><span class="badge ${priCls}">${t.priority||'-'}</span></td>
@@ -676,7 +678,7 @@ function renderHistory(){
       <div class="month-label">${g.label} — ${g.tasks.length} งาน</div>
       <table style="width:100%"><thead><tr><th>#</th><th>ชื่องาน</th><th>หมวด</th><th>ผู้สั่งงาน</th><th>กำหนดส่ง</th><th>เสร็จจริงวันที่</th><th>ความสำคัญ</th></tr></thead>
       <tbody>${g.tasks.map((t,i)=>`<tr>
-        <td style="color:#888">${i+1}</td><td><strong>${t.name}</strong></td>
+        <td style="color:#888">${i+1}</td><td><strong class="task-link" onclick="editTask('${t.id}')" title="คลิกเพื่อแก้ไขงานนี้">${t.name}</strong></td>
         <td><span class="badge" style="background:var(--purple-light);color:var(--purple-dark)">${t.category||'-'}</span></td>
         <td>${t.assigner||'-'}</td><td>${t.deadline||'-'}</td>
         <td style="color:var(--green)">${t.completedAt||'-'}</td>
