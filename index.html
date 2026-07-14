@@ -146,10 +146,10 @@ tr:hover td{background:#fafafa}
   <div class="noti-inner">
     <span style="font-size:20px">🔔</span>
     <div style="flex:1">
-      <div class="noti-title">⚠️ งานที่ใกล้ถึงกำหนด (ภายใน 3 วัน) ยังไม่เสร็จ!</div>
+      <div class="noti-title">⚠️ งานที่เลยกำหนดหรือใกล้ส่ง (ภายใน 3 วัน) ยังไม่เสร็จ!</div>
       <div class="noti-list" id="notiList"></div>
     </div>
-    <span class="noti-close" onclick="document.getElementById('notiBar').style.display='none'">×</span>
+    <span class="noti-close" onclick="sessionStorage.setItem('mb_noti_dismissed','true'); isNotiDismissed=true; document.getElementById('notiBar').style.display='none'">×</span>
   </div>
 </div>
 
@@ -182,6 +182,10 @@ tr:hover td{background:#fafafa}
     <div class="sec-title">🚨 งานเลยกำหนดหรือใกล้เดดไลน์ (≤3 วัน)</div>
     <div id="urgentList"></div>
   </div>
+  <div class="card">
+    <div class="sec-title">👤 สรุปงานตามผู้สั่งงาน</div>
+    <div id="dashAssignerTable"></div>
+  </div>
 </div>
 
 <!-- TASKS -->
@@ -201,25 +205,24 @@ tr:hover td{background:#fafafa}
       </select>
       <select id="filterAssigner" onchange="renderTasks()"><option value="">ทุกผู้สั่งงาน</option></select>
       <button class="btn btn-ghost btn-sm" onclick="clearFilters()">ล้างตัวกรอง</button>
+      
+      <div style="display:flex;align-items:center;gap:12px;margin-left:auto;font-size:12px;color:var(--gray4);background:#fbfbfe;padding:4px 10px;border-radius:20px;border:1px solid #ebebef">
+        <span style="font-weight:600;color:var(--purple)">⚙️ คอลัมน์พิเศษ:</span>
+        <label style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;user-select:none"><input type="checkbox" id="colShowFile" onchange="renderTasks()" style="accent-color:var(--purple)"> ไฟล์/รูป</label>
+        <label style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;user-select:none"><input type="checkbox" id="colShowNote" onchange="renderTasks()" style="accent-color:var(--purple)"> หมายเหตุ</label>
+      </div>
     </div>
     <div class="tbl-wrap">
       <table>
         <thead><tr>
           <th class="sticky-col">จัดการ</th>
-          <th onclick="sortBy('index')"># <span class="sort-icon" id="si-index"></span></th>
+          <th onclick="sortBy('index')" style="width:50px"># <span class="sort-icon" id="si-index"></span></th>
           <th onclick="sortBy('name')">ชื่องาน <span class="sort-icon" id="si-name"></span></th>
-          <th>หมวด</th>
-          <th onclick="sortBy('status')">สถานะ <span class="sort-icon" id="si-status"></span></th>
-          <th onclick="sortBy('priority')">ความสำคัญ <span class="sort-icon" id="si-priority"></span></th>
-          <th onclick="sortBy('startDate')">เริ่ม <span class="sort-icon" id="si-startDate"></span></th>
-          <th onclick="sortBy('deadline')">กำหนดส่ง <span class="sort-icon" id="si-deadline"></span></th>
-          <th onclick="sortBy('deadline')">วันคงเหลือ <span class="sort-icon" id="si-daysleft"></span></th>
-          <th onclick="sortBy('percent')">%งาน <span class="sort-icon" id="si-percent"></span></th>
-          <th>ผู้สั่งงาน</th>
-          <th>ไฟล์/รูป</th>
-          <th onclick="sortBy('completedAt')">เสร็จจริงวันที่ <span class="sort-icon" id="si-completedAt"></span></th>
-          <th>หมายเหตุ</th>
-          <th>อัพเดท</th>
+          <th onclick="sortBy('status')" style="width:140px">สถานะ & %งาน <span class="sort-icon" id="si-status"></span></th>
+          <th onclick="sortBy('deadline')" style="width:140px">ระยะเวลา (เริ่ม/ส่ง) <span class="sort-icon" id="si-deadline"></span></th>
+          <th onclick="sortBy('deadline')" style="width:90px">วันคงเหลือ <span class="sort-icon" id="si-daysleft"></span></th>
+          <th id="thFile" style="width:100px; display:none">ไฟล์/รูป</th>
+          <th id="thNote" style="width:180px; display:none">หมายเหตุ</th>
         </tr></thead>
         <tbody id="taskTable"></tbody>
       </table>
@@ -228,6 +231,7 @@ tr:hover td{background:#fafafa}
   </div>
 </div>
 
+<!-- COMPLETED -->
 <!-- COMPLETED -->
 <div class="page" id="page-completed">
   <div class="card">
@@ -240,24 +244,25 @@ tr:hover td{background:#fafafa}
       </select>
       <select id="completedFilterAssigner" onchange="renderCompletedTasks()"><option value="">ทุกผู้สั่งงาน</option></select>
       <button class="btn btn-ghost btn-sm" onclick="clearCompletedFilters()">ล้างตัวกรอง</button>
+      
+      <div style="display:flex;align-items:center;gap:12px;margin-left:auto;font-size:12px;color:var(--gray4);background:#fbfbfe;padding:4px 10px;border-radius:20px;border:1px solid #ebebef">
+        <span style="font-weight:600;color:var(--purple)">⚙️ คอลัมน์พิเศษ:</span>
+        <label style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;user-select:none"><input type="checkbox" id="compColShowFile" onchange="renderCompletedTasks()" style="accent-color:var(--purple)"> ไฟล์/รูป</label>
+        <label style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;user-select:none"><input type="checkbox" id="compColShowCompletedAt" onchange="renderCompletedTasks()" style="accent-color:var(--purple)"> เสร็จจริงวันที่</label>
+        <label style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;user-select:none"><input type="checkbox" id="compColShowNote" onchange="renderCompletedTasks()" style="accent-color:var(--purple)"> หมายเหตุ</label>
+      </div>
     </div>
     <div class="tbl-wrap">
       <table>
         <thead><tr>
           <th class="sticky-col">จัดการ</th>
-          <th onclick="sortByCompleted('index')"># <span class="sort-icon" id="sic-index"></span></th>
+          <th onclick="sortByCompleted('index')" style="width:50px"># <span class="sort-icon" id="sic-index"></span></th>
           <th onclick="sortByCompleted('name')">ชื่องาน <span class="sort-icon" id="sic-name"></span></th>
-          <th>หมวด</th>
-          <th onclick="sortByCompleted('priority')">ความสำคัญ <span class="sort-icon" id="sic-priority"></span></th>
-          <th onclick="sortByCompleted('startDate')">เริ่ม <span class="sort-icon" id="sic-startDate"></span></th>
-          <th onclick="sortByCompleted('deadline')">กำหนดส่ง <span class="sort-icon" id="sic-deadline"></span></th>
-          <th>วันคงเหลือ</th>
-          <th>%งาน</th>
-          <th>ผู้สั่งงาน</th>
-          <th>ไฟล์/รูป</th>
-          <th onclick="sortByCompleted('completedAt')">เสร็จจริงวันที่ <span class="sort-icon" id="sic-completedAt"></span></th>
-          <th>หมายเหตุ</th>
-          <th>อัพเดท</th>
+          <th onclick="sortByCompleted('status')" style="width:140px">สถานะ & %งาน <span class="sort-icon" id="sic-status"></span></th>
+          <th onclick="sortByCompleted('deadline')" style="width:140px">ระยะเวลา (เริ่ม/ส่ง) <span class="sort-icon" id="sic-deadline"></span></th>
+          <th id="thCompFile" style="width:100px; display:none">ไฟล์/รูป</th>
+          <th id="thCompCompletedAt" onclick="sortByCompleted('completedAt')" style="width:110px; display:none">เสร็จจริงวันที่ <span class="sort-icon" id="sic-completedAt"></span></th>
+          <th id="thCompNote" style="width:180px; display:none">หมายเหตุ</th>
         </tr></thead>
         <tbody id="completedTaskTable"></tbody>
       </table>
@@ -299,6 +304,8 @@ tr:hover td{background:#fafafa}
         <button class="btn btn-primary" onclick="exportJSON()">📤 Export Backup (JSON)</button>
         <label class="btn btn-ghost" style="cursor:pointer">📥 Import Backup <input type="file" accept=".json" onchange="importJSON(event)" style="display:none"></label>
         <button class="btn btn-ghost" onclick="exportCSV()">📊 Export CSV</button>
+        <button class="btn btn-ghost" onclick="copyBackupCode()">📋 คัดลอกรหัสสำรองข้อมูล</button>
+        <button class="btn btn-ghost" onclick="restoreBackupCodePrompt()">📥 วางรหัสสำรองข้อมูล</button>
       </div>
     </div>
     <div class="settings-section">
@@ -314,7 +321,8 @@ tr:hover td{background:#fafafa}
     <h2 id="modalTitle">เพิ่มงานใหม่</h2>
     <div class="form-row">
       <label>ชื่อรายการงาน *</label>
-      <input type="text" id="fName" placeholder="ชื่องาน">
+      <input type="text" id="fName" list="taskNamesDatalist" placeholder="ชื่องาน">
+      <datalist id="taskNamesDatalist"></datalist>
     </div>
     <div class="form-2col">
       <div class="form-row">
@@ -492,6 +500,7 @@ function playAlertSound(){
 
 // ============ NOTIFICATION ============
 let notiSoundPlayed=false;
+let isNotiDismissed=sessionStorage.getItem('mb_noti_dismissed')==='true';
 function checkNotifications(){
   const today=new Date(); today.setHours(0,0,0,0);
   const urgent=tasks.filter(t=>{
@@ -507,11 +516,16 @@ function checkNotifications(){
   document.getElementById('notiList').innerHTML=urgent.map(t=>{
     const d=new Date(t.deadline); d.setHours(0,0,0,0);
     const diff=Math.round((d-today)/86400000);
-    const label=diff<0?`เลยกำหนด ${Math.abs(diff)} วัน`:diff===0?'ครบกำหนดวันนี้':`อีก ${diff} วัน`;
+    const label=diff<0?`<span style="color:#ffcfc9;font-weight:700">เลยกำหนด ${Math.abs(diff)} วัน</span>`:diff===0?'ครบกำหนดวันนี้':`อีก ${diff} วัน`;
     return `• <strong>${t.name}</strong> — ${label} (${t.deadline})`;
   }).join('<br>');
-  bar.style.display='block';
-  if(!notiSoundPlayed){notiSoundPlayed=true; playAlertSound();}
+  
+  if(isNotiDismissed){
+    bar.style.display='none';
+  }else{
+    bar.style.display='block';
+    if(!notiSoundPlayed){notiSoundPlayed=true; playAlertSound();}
+  }
 }
 
 // ============ NAV ============
@@ -599,6 +613,51 @@ function renderDashboard(){
       return `<tr><td><strong class="task-link" onclick="editTask('${t.id}')" title="คลิกเพื่อแก้ไขงานนี้">${t.name}</strong></td><td>${t.category||'-'}</td><td>${t.assigner||'-'}</td><td>${t.deadline||'-'}</td>
         <td><span style="color:${diff<0?'var(--red)':'var(--orange)'};font-weight:700">${diff<0?diff+'วัน':'อีก '+diff+' วัน'}</span></td></tr>`;
     }).join('')+'</tbody></table>';
+
+  // สรุปงานตามผู้สั่งงาน
+  const aStats={};
+  tasks.forEach(t=>{
+    const a=t.assigner||'ไม่ระบุ';
+    if(!aStats[a]) aStats[a]={total:0,done:0};
+    aStats[a].total++;
+    if(t.status==='เสร็จสิ้น') aStats[a].done++;
+  });
+  const aRows=Object.keys(aStats).sort().map(a=>{
+    const total=aStats[a].total;
+    const done=aStats[a].done;
+    const pending=total-done;
+    const pct=total>0?Math.round((done/total)*100):0;
+    return `<tr>
+      <td><strong>${a}</strong></td>
+      <td style="text-align:center">${total}</td>
+      <td style="text-align:center;color:var(--green);font-weight:700">${done}</td>
+      <td style="text-align:center;color:${pending>0?'var(--orange)':'#555'};font-weight:700">${pending}</td>
+      <td style="text-align:center">
+        <div style="display:flex;align-items:center;justify-content:center;gap:6px">
+          <div class="mini-bar" style="width:60px;margin:0"><div class="mini-bar-fill" style="width:${pct}%;background:var(--green)"></div></div>
+          <span style="font-size:11px;color:#555;font-weight:600">${pct}%</span>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+  
+  const assignerTableHtml=`
+    <table style="width:100%">
+      <thead>
+        <tr>
+          <th>ผู้สั่งงาน</th>
+          <th style="text-align:center;width:100px">งานทั้งหมด</th>
+          <th style="text-align:center;width:100px">เสร็จสิ้น</th>
+          <th style="text-align:center;width:100px">คงค้าง</th>
+          <th style="text-align:center;width:130px">อัตราสำเร็จ</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${aRows.length ? aRows : '<tr><td colspan="5" style="text-align:center;color:#aaa">ยังไม่มีข้อมูลผู้สั่งงาน</td></tr>'}
+      </tbody>
+    </table>
+  `;
+  document.getElementById('dashAssignerTable').innerHTML=assignerTableHtml;
 }
 
 // ============ SORT ============
@@ -629,8 +688,29 @@ function applySort(list){
   return list;
 }
 
-// ============ TASKS ============
 function renderTasks(){
+  // Load column visibility preferences
+  if(localStorage.getItem('mb_col_file')===null){
+    document.getElementById('colShowFile').checked=false;
+  }else{
+    document.getElementById('colShowFile').checked=localStorage.getItem('mb_col_file')==='true';
+  }
+  if(localStorage.getItem('mb_col_note')===null){
+    document.getElementById('colShowNote').checked=false;
+  }else{
+    document.getElementById('colShowNote').checked=localStorage.getItem('mb_col_note')==='true';
+  }
+
+  const showFile=document.getElementById('colShowFile').checked;
+  const showNote=document.getElementById('colShowNote').checked;
+
+  localStorage.setItem('mb_col_file', showFile);
+  localStorage.setItem('mb_col_note', showNote);
+
+  // Update header elements visibility
+  document.getElementById('thFile').style.display=showFile?'':'none';
+  document.getElementById('thNote').style.display=showNote?'':'none';
+
   populateFilters();
   const search=document.getElementById('searchInput').value.toLowerCase();
   const cat=document.getElementById('filterCat').value;
@@ -640,7 +720,12 @@ function renderTasks(){
 
   let filtered=tasks.filter(t=>{
     if(t.status==='เสร็จสิ้น') return false;
-    if(search&&!t.name.toLowerCase().includes(search)) return false;
+    if(search){
+      const hasMatch=t.name.toLowerCase().includes(search)||
+                       (t.note&&t.note.toLowerCase().includes(search))||
+                       (t.updates&&t.updates.some(u=>u.text&&u.text.toLowerCase().includes(search)));
+      if(!hasMatch) return false;
+    }
     if(cat&&t.category!==cat) return false;
     if(status&&t.status!==status) return false;
     if(priority&&t.priority!==priority) return false;
@@ -669,15 +754,41 @@ function renderTasks(){
     const pct=t.percent||0;
     const barColor=pct>=100?'#11734b':pct>=60?'#8989eb':'#f46524';
 
-    // file/image cell
+    // file/image cell content
     let fileCell='';
     if(t.imageData) fileCell+=`<img class="img-thumb" src="${t.imageData}" onclick="viewImg('${t.id}')" title="ดูรูป"> `;
-    if(t.fileName) fileCell+=`<span style="font-size:11px;background:#f0f0f0;padding:2px 6px;border-radius:4px;color:#555">📄 ${t.fileName}</span>`;
-    if(t.link) fileCell+=` <a href="${t.link}" target="_blank" style="font-size:11px;color:var(--purple)">🔗</a>`;
+    if(t.fileName) fileCell+=`<span style="font-size:11px;background:#f0f0f0;padding:2px 6px;border-radius:4px;color:#555" title="${t.fileName}">📄 ${t.fileName.length>10?t.fileName.slice(0,8)+'…':t.fileName}</span>`;
+    if(t.link) fileCell+=` <a href="${t.link}" target="_blank" style="font-size:11px;color:var(--purple)" title="ลิงก์ภายนอก">🔗</a>`;
     if(!fileCell) fileCell='-';
 
-    const completedAt=t.completedAt?`<span style="font-size:12px;color:var(--green)">${t.completedAt}</span>`:'-';
     const updCount=(t.updates||[]).length;
+    const updBadge=updCount?`<span style="font-size:10px;background:var(--purple-light);color:var(--purple-dark);padding:1px 5px;border-radius:10px;margin-left:5px" title="จำนวนอัปเดตงานรายวัน">📝 ${updCount}</span>`:'';
+
+    const catBadge=t.category?`<span class="badge" style="background:var(--purple-light);color:var(--purple-dark);font-size:10px;padding:1px 6px">${t.category}</span>`:'';
+    const priBadge=t.priority?`<span class="badge ${priCls}" style="font-size:10px;padding:1px 6px">${t.priority}</span>`:'';
+    const asgLabel=t.assigner?`<span style="font-size:11px;color:#888">👤 ${t.assigner}</span>`:'';
+
+    const nameHtml=`
+      <div style="display:flex;align-items:center;flex-wrap:wrap">
+        <strong class="task-link" onclick="editTask('${t.id}')" title="คลิกเพื่อแก้ไขงานนี้">${t.name}</strong>${updBadge}
+      </div>
+      <div style="margin-top:4px;display:flex;align-items:center;flex-wrap:wrap;gap:4px">
+        ${catBadge} ${priBadge} ${asgLabel}
+      </div>
+    `;
+
+    const statusProgressHtml=`
+      <div style="margin-bottom:4px"><span class="badge ${statusCls}">${t.status||'-'}</span></div>
+      <div style="display:flex;align-items:center;gap:4px">
+        <div class="mini-bar" style="width:65px"><div class="mini-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+        <span style="font-size:11px;color:#666">${pct}%</span>
+      </div>
+    `;
+
+    const durationHtml=`
+      <div style="font-size:11px;color:#aaa;line-height:1.2">เริ่ม: ${t.startDate||'-'}</div>
+      <div style="font-size:12px;color:var(--gray4);font-weight:600;line-height:1.2">ส่ง: ${t.deadline||'-'}</div>
+    `;
 
     return `<tr>
       <td class="sticky-col" style="white-space:nowrap">
@@ -686,26 +797,12 @@ function renderTasks(){
         <button class="btn btn-sm btn-danger" onclick="deleteTask('${t.id}')" title="ลบ">🗑</button>
       </td>
       <td style="color:#888">${i+1}</td>
-      <td><strong class="task-link" onclick="editTask('${t.id}')" title="คลิกเพื่อแก้ไขงานนี้">${t.name}</strong></td>
-      <td><span class="badge" style="background:var(--purple-light);color:var(--purple-dark)">${t.category||'-'}</span></td>
-      <td><span class="badge ${statusCls}">${t.status||'-'}</span></td>
-      <td><span class="badge ${priCls}">${t.priority||'-'}</span></td>
-      <td style="white-space:nowrap;color:#888">${t.startDate||'-'}</td>
-      <td style="white-space:nowrap;color:#888">${t.deadline||'-'}</td>
+      <td>${nameHtml}</td>
+      <td>${statusProgressHtml}</td>
+      <td>${durationHtml}</td>
       <td style="text-align:center">${dayLeft}</td>
-      <td>
-        <div style="display:flex;align-items:center;gap:6px">
-          <div class="mini-bar"><div class="mini-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
-          <span style="font-size:12px;color:#555">${pct}%</span>
-        </div>
-      </td>
-      <td>${t.assigner||'-'}</td>
-      <td style="white-space:nowrap">${fileCell}</td>
-      <td style="white-space:nowrap">${completedAt}</td>
-      <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#888" title="${t.note||''}">${t.note||'-'}</td>
-      <td style="white-space:nowrap;text-align:center">
-        <button class="btn btn-sm btn-ghost" onclick="openUpdateModal('${t.id}')" title="ดู/เพิ่มอัพเดท">📝${updCount?' ('+updCount+')':''}</button>
-      </td>
+      ${showFile?`<td style="white-space:nowrap">${fileCell}</td>`:''}
+      ${showNote?`<td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#888" title="${t.note||''}">${t.note||'-'}</td>`:''}
     </tr>`;
   }).join('');
 }
@@ -868,10 +965,17 @@ function closeUpdateModal(){
   document.getElementById('updateModal').classList.remove('open');
   currentUpdateTaskId=null; editingUpdateId=null;
 }
+function updateDatalist(){
+  const dl=document.getElementById('taskNamesDatalist');
+  if(!dl) return;
+  const names=Array.from(new Set(tasks.map(t=>t.name).filter(Boolean)));
+  dl.innerHTML=names.map(name=>`<option value="${name}">`).join('');
+}
 function openAddModal(){
   editId=null; currentImageData=null;
   document.getElementById('modalTitle').textContent='เพิ่มงานใหม่';
   clearForm();
+  updateDatalist();
   document.getElementById('taskModal').classList.add('open');
 }
 function editTask(id){
@@ -879,6 +983,7 @@ function editTask(id){
   editId=id; currentImageData=t.imageData||null;
   document.getElementById('modalTitle').textContent='แก้ไขงาน';
   populateModalDropdowns();
+  updateDatalist();
   document.getElementById('fName').value=t.name||'';
   document.getElementById('fCat').value=t.category||'';
   document.getElementById('fAssigner').value=t.assigner||'';
@@ -996,7 +1101,7 @@ function saveTask(){
   else tasks.push(t);
   save(); closeModal(); renderTasks(); 
   if(typeof renderCompletedTasks==='function') renderCompletedTasks();
-  renderDashboard(); checkNotifications();
+  renderDashboard(); checkNotifications(); updateDatalist();
 }
 function deleteTask(id){
   if(!confirm('ลบงานนี้?')) return;
@@ -1029,6 +1134,34 @@ function exportCSV(){
   const headers=['ID','ชื่องาน','หมวดหมู่','สถานะ','ความสำคัญ','วันเริ่ม','กำหนดส่ง','%งาน','ผู้สั่งงาน','ชื่อไฟล์','ลิงก์','เสร็จจริงวันที่','หมายเหตุ'];
   const rows=tasks.map(t=>[t.id,t.name,t.category,t.status,t.priority,t.startDate,t.deadline,t.percent,t.assigner,t.fileName,t.link,t.completedAt,t.note].map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`));
   dl(new Blob(['\uFEFF'+[headers,...rows].map(r=>r.join(',')).join('\n')],{type:'text/csv;charset=utf-8'}),'manybear-tasks-'+fmt(new Date())+'.csv');
+}
+function copyBackupCode(){
+  const d={tasks,categories,assigners,exportedAt:new Date().toISOString()};
+  const str=btoa(unescape(encodeURIComponent(JSON.stringify(d))));
+  navigator.clipboard.writeText(str).then(()=>{
+    alert('คัดลอกรหัสสำรองข้อมูลลงคลิปบอร์ดแล้ว! คุณสามารถส่งรหัสนี้ทาง LINE เพื่อกู้คืนข้อมูลได้ทันที');
+  }).catch(()=>{
+    const dummy=document.createElement("textarea");
+    document.body.appendChild(dummy);
+    dummy.value=str;
+    dummy.select();
+    document.execCommand("copy");
+    document.body.removeChild(dummy);
+    alert('คัดลอกรหัสสำรองข้อมูลเรียบร้อยแล้ว!');
+  });
+}
+function restoreBackupCodePrompt(){
+  const str=prompt('วางรหัสสำรองข้อมูล (รหัสตัวอักษรยาวๆ ที่คัดลอกมา):');
+  if(!str) return;
+  try{
+    const json=decodeURIComponent(escape(atob(str.trim())));
+    const d=JSON.parse(json);
+    if(d.tasks) tasks=d.tasks;
+    if(d.categories) categories=d.categories;
+    if(d.assigners) assigners=d.assigners;
+    save(); renderSettings(); renderDashboard(); checkNotifications();
+    alert('กู้คืนข้อมูลสำเร็จ! มี '+tasks.length+' งาน');
+  }catch(e){alert('รหัสสำรองข้อมูลไม่ถูกต้อง');}
 }
 function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();}
 function clearAll(){if(confirm('ล้างข้อมูลทั้งหมด? ไม่สามารถกู้คืนได้!')){tasks=[];save();renderDashboard();renderSettings();checkNotifications();alert('ล้างข้อมูลเรียบร้อย');}}
@@ -1212,7 +1345,7 @@ function doPrint(){
     .attach-ico{font-size:10px;margin-left:3px}
     .note-appendix-item{margin-bottom:10px;padding-bottom:8px;border-bottom:1px dashed #ddd}
     .note-appendix-item b{color:#5a5ab8}
-    .sign-box{display:flex;gap:30px;margin-top:50px}
+    .sign-box{display:flex;gap:30px;margin-top:50px;page-break-inside:avoid;break-inside:avoid}
     .sign-box .col{flex:1;font-size:10px}
     .sign-line{margin-top:36px;border-top:1px solid #999;padding-top:4px;color:#888}
     @page{size:A4 landscape;margin:0}
@@ -1425,6 +1558,36 @@ function applyCompletedSort(list){
 }
 
 function renderCompletedTasks(){
+  // Load column visibility preferences
+  if(localStorage.getItem('mb_comp_col_file')===null){
+    document.getElementById('compColShowFile').checked=false;
+  }else{
+    document.getElementById('compColShowFile').checked=localStorage.getItem('mb_comp_col_file')==='true';
+  }
+  if(localStorage.getItem('mb_comp_col_completed')===null){
+    document.getElementById('compColShowCompletedAt').checked=false;
+  }else{
+    document.getElementById('compColShowCompletedAt').checked=localStorage.getItem('mb_comp_col_completed')==='true';
+  }
+  if(localStorage.getItem('mb_comp_col_note')===null){
+    document.getElementById('compColShowNote').checked=false;
+  }else{
+    document.getElementById('compColShowNote').checked=localStorage.getItem('mb_comp_col_note')==='true';
+  }
+
+  const showFile=document.getElementById('compColShowFile').checked;
+  const showCompletedAt=document.getElementById('compColShowCompletedAt').checked;
+  const showNote=document.getElementById('compColShowNote').checked;
+
+  localStorage.setItem('mb_comp_col_file', showFile);
+  localStorage.setItem('mb_comp_col_completed', showCompletedAt);
+  localStorage.setItem('mb_comp_col_note', showNote);
+
+  // Update header elements visibility
+  document.getElementById('thCompFile').style.display=showFile?'':'none';
+  document.getElementById('thCompCompletedAt').style.display=showCompletedAt?'':'none';
+  document.getElementById('thCompNote').style.display=showNote?'':'none';
+
   const search=document.getElementById('completedSearchInput').value.toLowerCase();
   const cat=document.getElementById('completedFilterCat').value;
   const priority=document.getElementById('completedFilterPriority').value;
@@ -1432,7 +1595,12 @@ function renderCompletedTasks(){
 
   let filtered=tasks.filter(t=>{
     if(t.status!=='เสร็จสิ้น') return false;
-    if(search&&!t.name.toLowerCase().includes(search)) return false;
+    if(search){
+      const hasMatch=t.name.toLowerCase().includes(search)||
+                       (t.note&&t.note.toLowerCase().includes(search))||
+                       (t.updates&&t.updates.some(u=>u.text&&u.text.toLowerCase().includes(search)));
+      if(!hasMatch) return false;
+    }
     if(cat&&t.category!==cat) return false;
     if(priority&&t.priority!==priority) return false;
     if(assigner&&t.assigner!==assigner) return false;
@@ -1448,19 +1616,45 @@ function renderCompletedTasks(){
 
   tbody.innerHTML=filtered.map((t,i)=>{
     const priCls={'ด่วน':'urgent','สูง':'high','ปานกลาง':'mid','ต่ำ':'low'}[t.priority]||'mid';
-    let dayLeft='-';
     const pct=t.percent||0;
     const barColor='#11734b';
 
-    // file/image cell
+    // file/image cell content
     let fileCell='';
     if(t.imageData) fileCell+=`<img class="img-thumb" src="${t.imageData}" onclick="viewImg('${t.id}')" title="ดูรูป"> `;
-    if(t.fileName) fileCell+=`<span style="font-size:11px;background:#f0f0f0;padding:2px 6px;border-radius:4px;color:#555">📄 ${t.fileName}</span>`;
-    if(t.link) fileCell+=` <a href="${t.link}" target="_blank" style="font-size:11px;color:var(--purple)">🔗</a>`;
+    if(t.fileName) fileCell+=`<span style="font-size:11px;background:#f0f0f0;padding:2px 6px;border-radius:4px;color:#555" title="${t.fileName}">📄 ${t.fileName.length>10?t.fileName.slice(0,8)+'…':t.fileName}</span>`;
+    if(t.link) fileCell+=` <a href="${t.link}" target="_blank" style="font-size:11px;color:var(--purple)" title="ลิงก์ภายนอก">🔗</a>`;
     if(!fileCell) fileCell='-';
 
     const completedAt=t.completedAt?`<span style="font-size:12px;color:var(--green)">${t.completedAt}</span>`:'-';
     const updCount=(t.updates||[]).length;
+    const updBadge=updCount?`<span style="font-size:10px;background:var(--purple-light);color:var(--purple-dark);padding:1px 5px;border-radius:10px;margin-left:5px" title="จำนวนอัปเดตงานรายวัน">📝 ${updCount}</span>`:'';
+
+    const catBadge=t.category?`<span class="badge" style="background:var(--purple-light);color:var(--purple-dark);font-size:10px;padding:1px 6px">${t.category}</span>`:'';
+    const priBadge=t.priority?`<span class="badge ${priCls}" style="font-size:10px;padding:1px 6px">${t.priority}</span>`:'';
+    const asgLabel=t.assigner?`<span style="font-size:11px;color:#888">👤 ${t.assigner}</span>`:'';
+
+    const nameHtml=`
+      <div style="display:flex;align-items:center;flex-wrap:wrap">
+        <strong class="task-link" onclick="editTask('${t.id}')" title="คลิกเพื่อแก้ไขงานนี้">${t.name}</strong>${updBadge}
+      </div>
+      <div style="margin-top:4px;display:flex;align-items:center;flex-wrap:wrap;gap:4px">
+        ${catBadge} ${priBadge} ${asgLabel}
+      </div>
+    `;
+
+    const statusProgressHtml=`
+      <div style="margin-bottom:4px"><span class="badge done">เสร็จสิ้น</span></div>
+      <div style="display:flex;align-items:center;gap:4px">
+        <div class="mini-bar" style="width:65px"><div class="mini-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+        <span style="font-size:11px;color:#666">${pct}%</span>
+      </div>
+    `;
+
+    const durationHtml=`
+      <div style="font-size:11px;color:#aaa;line-height:1.2">เริ่ม: ${t.startDate||'-'}</div>
+      <div style="font-size:12px;color:var(--gray4);font-weight:600;line-height:1.2">ส่ง: ${t.deadline||'-'}</div>
+    `;
 
     return `<tr>
       <td class="sticky-col" style="white-space:nowrap">
@@ -1469,25 +1663,12 @@ function renderCompletedTasks(){
         <button class="btn btn-sm btn-danger" onclick="deleteTask('${t.id}')" title="ลบ">🗑</button>
       </td>
       <td style="color:#888">${i+1}</td>
-      <td><strong class="task-link" onclick="editTask('${t.id}')" title="คลิกเพื่อแก้ไขงานนี้">${t.name}</strong></td>
-      <td><span class="badge" style="background:var(--purple-light);color:var(--purple-dark)">${t.category||'-'}</span></td>
-      <td><span class="badge ${priCls}">${t.priority||'-'}</span></td>
-      <td style="white-space:nowrap;color:#888">${t.startDate||'-'}</td>
-      <td style="white-space:nowrap;color:#888">${t.deadline||'-'}</td>
-      <td style="text-align:center">${dayLeft}</td>
-      <td>
-        <div style="display:flex;align-items:center;gap:6px">
-          <div class="mini-bar"><div class="mini-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
-          <span style="font-size:12px;color:#555">${pct}%</span>
-        </div>
-      </td>
-      <td>${t.assigner||'-'}</td>
-      <td style="white-space:nowrap">${fileCell}</td>
-      <td style="white-space:nowrap">${completedAt}</td>
-      <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#888" title="${t.note||''}">${t.note||'-'}</td>
-      <td style="white-space:nowrap;text-align:center">
-        <button class="btn btn-sm btn-ghost" onclick="openUpdateModal('${t.id}')" title="ดู/เพิ่มอัพเดท">📝${updCount?' ('+updCount+')':''}</button>
-      </td>
+      <td>${nameHtml}</td>
+      <td>${statusProgressHtml}</td>
+      <td>${durationHtml}</td>
+      ${showFile?`<td style="white-space:nowrap">${fileCell}</td>`:''}
+      ${showCompletedAt?`<td style="white-space:nowrap">${completedAt}</td>`:''}
+      ${showNote?`<td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#888" title="${t.note||''}">${t.note||'-'}</td>`:''}
     </tr>`;
   }).join('');
 }
