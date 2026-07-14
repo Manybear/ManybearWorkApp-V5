@@ -1335,9 +1335,9 @@ function doPrint(){
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Sarabun',Arial,sans-serif;font-size:11px;background:#fff;color:#1f1f1f;
          -webkit-font-smoothing:antialiased}
-    .print-page{padding:12mm 12mm 8mm;page-break-after:always;position:relative}
+    .print-page{padding:0;margin:0;page-break-after:always;position:relative}
     .print-page:last-child{page-break-after:auto}
-    .section-tag{position:absolute;top:6mm;right:12mm;font-size:8.5px;color:#aaa}
+    .section-tag{position:absolute;top:-8mm;right:0;font-size:8.5px;color:#aaa}
     h1{color:#5a5ab8;font-size:16px;margin-bottom:3px;font-family:'Sarabun',Arial,sans-serif}
     h2{color:#5a5ab8;font-size:12px;margin:0 0 8px;padding-bottom:5px;border-bottom:2px solid #8989eb;font-family:'Sarabun',Arial,sans-serif}
     h3{color:#5a5ab8;font-size:11px;margin:10px 0 4px;font-family:'Sarabun',Arial,sans-serif}
@@ -1353,7 +1353,7 @@ function doPrint(){
     th{background:#8989eb;color:#fff;padding:4px 5px;text-align:left;font-weight:700;overflow:hidden;word-break:break-word}
     td{padding:3px 5px;border-bottom:1px solid #ebebeb;vertical-align:top;overflow:hidden;word-break:break-word;line-height:1.4}
     tr:nth-child(even) td{background:#f9f9ff}
-    tr{page-break-inside:avoid}
+    tr, td{page-break-inside:avoid;break-inside:avoid}
     .badge-done{color:#11734b;font-weight:700}
     .badge-inprog{color:#0a53a8;font-weight:700}
     .badge-urgent{color:#b10202;font-weight:700}
@@ -1368,7 +1368,7 @@ function doPrint(){
     .sign-box{display:flex;gap:30px;margin-top:50px;page-break-inside:avoid;break-inside:avoid}
     .sign-box .col{flex:1;font-size:10px}
     .sign-line{margin-top:36px;border-top:1px solid #999;padding-top:4px;color:#888}
-    @page{size:A4 landscape;margin:0}
+    @page{size:A4 landscape;margin:15mm 15mm 15mm 15mm}
     @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}.print-page{page-break-after:always}.print-page:last-child{page-break-after:auto}}
   </style>`;
 
