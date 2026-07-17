@@ -277,7 +277,13 @@ tr:hover td{background:#fafafa}
 <!-- HISTORY -->
 <div class="page" id="page-history">
   <div class="card">
-    <div class="sec-title">📅 ประวัติงาน (รายเดือน)</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;border-bottom:2px solid var(--purple-light);padding-bottom:10px;margin-bottom:16px">
+      <div class="sec-title" style="margin:0">📅 ประวัติการทำงาน</div>
+      <div style="display:flex;gap:6px">
+        <button id="btnHistCompleted" class="btn btn-sm btn-primary" onclick="changeHistoryTab('completed')">📁 งานที่เสร็จแล้ว</button>
+        <button id="btnHistUpdates" class="btn btn-sm btn-ghost" onclick="changeHistoryTab('updates')">📝 ประวัติการอัปเดต (Timeline)</button>
+      </div>
+    </div>
     <div id="historyContent"></div>
   </div>
 </div>
@@ -401,9 +407,12 @@ tr:hover td{background:#fafafa}
       </div>
       <div class="attach-preview" id="attachPreview"></div>
     </div>
-    <div class="form-row">
-      <label>ลิงก์ไฟล์งาน</label>
-      <input type="text" id="fLink" placeholder="https://...">
+    <div class="form-row" style="border-top:1px solid #eee;padding-top:10px;margin-top:10px">
+      <label style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <span>🔗 ลิงก์งาน / โซเชียลมีเดีย (ระบุได้หลายลิงก์)</span>
+        <button type="button" class="btn btn-sm btn-ghost" onclick="addModalLink()" style="padding:2px 8px;font-size:11px">+ เพิ่มลิงก์</button>
+      </label>
+      <div id="formLinksList"></div>
     </div>
     <div class="form-row">
       <label>หมายเหตุ</label>
@@ -430,6 +439,7 @@ tr:hover td{background:#fafafa}
       <label class="pdf-option" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f0;cursor:pointer"><input type="checkbox" id="pdfDash" checked style="width:18px;height:18px;accent-color:var(--purple)"> Dashboard สรุปภาพรวม</label>
       <label class="pdf-option" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f0;cursor:pointer"><input type="checkbox" id="pdfTasks" checked style="width:18px;height:18px;accent-color:var(--purple)"> รายการงานทั้งหมด</label>
       <label class="pdf-option" style="display:flex;align-items:center;gap:10px;padding:4px 0 4px;cursor:pointer;padding-left:28px"><input type="checkbox" id="pdfFullNote" style="width:18px;height:18px;accent-color:var(--purple)"> <span style="font-size:13px;color:#666">รวมหมายเหตุแบบเต็ม (เพิ่มหน้าท้ายเอกสาร)</span></label>
+      <label class="pdf-option" style="display:flex;align-items:center;gap:10px;padding:4px 0 4px;cursor:pointer;padding-left:28px"><input type="checkbox" id="pdfShowUpdates" style="width:18px;height:18px;accent-color:var(--purple)"> <span style="font-size:13px;color:#666">รวมประวัติบันทึกอัปเดตงานรายวัน (แสดงใต้ชื่องาน)</span></label>
       <label class="pdf-option" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid #f0f0f0;cursor:pointer"><input type="checkbox" id="pdfHistory" style="width:18px;height:18px;accent-color:var(--purple)"> History รายเดือน</label>
       
       <div style="margin-top:10px; padding:12px; background:#f9f9ff; border:1px solid var(--purple-light); border-radius:8px">
@@ -778,7 +788,13 @@ function renderTasks(){
     let fileCell='';
     if(t.imageData) fileCell+=`<img class="img-thumb" src="${t.imageData}" onclick="viewImg('${t.id}')" title="ดูรูป"> `;
     if(t.fileName) fileCell+=`<span style="font-size:11px;background:#f0f0f0;padding:2px 6px;border-radius:4px;color:#555" title="${t.fileName}">📄 ${t.fileName.length>10?t.fileName.slice(0,8)+'…':t.fileName}</span>`;
-    if(t.link) fileCell+=` <a href="${t.link}" target="_blank" style="font-size:11px;color:var(--purple)" title="ลิงก์ภายนอก">🔗</a>`;
+    const lnks = t.links || (t.link ? [ { label: 'ลิงก์', url: t.link } ] : []);
+    lnks.forEach(lnk => {
+      if(lnk.url) {
+        const label = lnk.label || 'ลิงก์';
+        fileCell += ` <a href="${lnk.url}" target="_blank" style="display:inline-block;font-size:10px;background:#eef2ff;color:var(--purple-dark);padding:1px 5px;border-radius:4px;border:1px solid var(--purple-light);text-decoration:none;margin-top:2px" title="${lnk.url}">🔗 ${label}</a>`;
+      }
+    });
     if(!fileCell) fileCell='-';
 
     const updCount=(t.updates||[]).length;
@@ -854,7 +870,96 @@ function clearFilters(){
 }
 
 // ============ HISTORY ============
+let currentHistoryTab='completed';
+function changeHistoryTab(tab){
+  currentHistoryTab=tab;
+  const btnComp=document.getElementById('btnHistCompleted');
+  const btnUpd=document.getElementById('btnHistUpdates');
+  if(tab==='completed'){
+    if(btnComp) btnComp.className='btn btn-sm btn-primary';
+    if(btnUpd) btnUpd.className='btn btn-sm btn-ghost';
+  }else{
+    if(btnComp) btnComp.className='btn btn-sm btn-ghost';
+    if(btnUpd) btnUpd.className='btn btn-sm btn-primary';
+  }
+  renderHistory();
+}
+function renderHistoryUpdates(){
+  const el=document.getElementById('historyContent');
+  if(!el) return;
+  const allUpdates=[];
+  tasks.forEach(t=>{
+    if(t.updates && t.updates.length){
+      t.updates.forEach(u=>{
+        allUpdates.push({
+          taskId:t.id,
+          taskName:t.name,
+          taskStatus:t.status,
+          updateId:u.id,
+          date:new Date(u.date),
+          text:u.text
+        });
+      });
+    }
+  });
+  if(allUpdates.length===0){
+    el.innerHTML='<div style="color:#aaa;text-align:center;padding:30px 0;font-size:14px">📭 ยังไม่มีประวัติการอัปเดตงานรายวัน</div>';
+    return;
+  }
+  allUpdates.sort((a,b)=>b.date - a.date);
+  const grouped={};
+  allUpdates.forEach(item=>{
+    const y=item.date.getFullYear();
+    const m=String(item.date.getMonth()+1).padStart(2,'0');
+    const d=String(item.date.getDate()).padStart(2,'0');
+    const key=`${y}-${m}-${d}`;
+    const today=new Date();
+    const yesterday=new Date(); yesterday.setDate(today.getDate()-1);
+    let dayLabel=`${item.date.getDate()} ${MONTHS[item.date.getMonth()]} ${y+543}`;
+    if(key===getLocalDateStr(today)){
+      dayLabel=`วันนี้ ( ${dayLabel} )`;
+    }else if(key===getLocalDateStr(yesterday)){
+      dayLabel=`เมื่อวานนี้ ( ${dayLabel} )`;
+    }
+    if(!grouped[key]) grouped[key]={label:dayLabel,items:[]};
+    grouped[key].items.push(item);
+  });
+  const sortedKeys=Object.keys(grouped).sort().reverse();
+  const html=sortedKeys.map(key=>{
+    const group=grouped[key];
+    const itemsHtml=group.items.map(item=>{
+      const timeStr=item.date.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})+' น.';
+      const statusCls={'เสร็จสิ้น':'done','กำลังทำ':'inprog','เริ่มต้น':'start','วางแผน':'plan','ยังไม่เริ่ม':'notyet'}[item.taskStatus]||'plan';
+      return `
+        <div style="display:flex;gap:12px;margin-bottom:12px;position:relative;padding-left:14px">
+          <div style="position:absolute;left:-4px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--purple);border:2px solid #fff;box-shadow:0 0 0 2px var(--purple-light)"></div>
+          <div style="flex:1">
+            <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:12px;color:#888">
+              <span>⏰ ${timeStr}</span>
+              <span>•</span>
+              <strong class="task-link" style="color:var(--purple-dark);font-weight:600" onclick="editTask('${item.taskId}')" title="คลิกเพื่อเปิดดูงานนี้">${item.taskName}</strong>
+              <span class="badge ${statusCls}" style="font-size:10px;padding:1px 6px">${item.taskStatus}</span>
+            </div>
+            <div style="font-size:13.5px;color:#333;margin-top:4px;padding:8px 12px;background:#f9f9ff;border-radius:8px;border-left:3px solid var(--purple);white-space:pre-wrap;line-height:1.4">${item.text}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+    return `
+      <div style="margin-bottom:24px;position:relative">
+        <h3 style="color:var(--purple-dark);font-size:14px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:6px">📅 ${group.label}</h3>
+        <div style="position:absolute;left:0;top:28px;bottom:0;width:2px;background:var(--purple-light)"></div>
+        <div style="padding-left:12px">${itemsHtml}</div>
+      </div>
+    `;
+  }).join('');
+  el.innerHTML=html;
+}
 function renderHistory(){
+  if(currentHistoryTab==='updates'){
+    renderHistoryUpdates();
+    return;
+  }
   const done=tasks.filter(t=>t.status==='เสร็จสิ้น').sort((a,b)=>new Date(b.deadline)-new Date(a.deadline));
   const el=document.getElementById('historyContent');
   if(done.length===0){el.innerHTML='<div class="empty"><span>📭</span>ยังไม่มีงานที่เสร็จสิ้น</div>';return;}
@@ -985,6 +1090,36 @@ function closeUpdateModal(){
   document.getElementById('updateModal').classList.remove('open');
   currentUpdateTaskId=null; editingUpdateId=null;
 }
+let currentModalLinks=[];
+function renderModalLinks(){
+  const container=document.getElementById('formLinksList');
+  if(!container) return;
+  if(currentModalLinks.length===0){
+    container.innerHTML='<div style="color:#aaa;font-size:12px;padding:4px 0">ยังไม่มีลิงก์เพิ่มเติม (กด + เพิ่มลิงก์ เพื่อเพิ่ม)</div>';
+    return;
+  }
+  container.innerHTML=currentModalLinks.map((item,idx)=>`
+    <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px">
+      <input type="text" placeholder="ชื่อเรียก (เช่น FB, IG)" value="${item.label||''}" oninput="updateModalLink(${idx}, 'label', this.value)" style="width:130px;padding:6px;font-size:12.5px;border:1px solid var(--gray2);border-radius:6px;outline:none;font-family:inherit">
+      <input type="text" placeholder="ลิงก์ https://..." value="${item.url||''}" oninput="updateModalLink(${idx}, 'url', this.value)" style="flex:1;padding:6px;font-size:12.5px;border:1px solid var(--gray2);border-radius:6px;outline:none;font-family:inherit">
+      <button type="button" class="btn btn-sm btn-danger" onclick="removeModalLink(${idx})" style="padding:0 10px;font-size:16px;border-radius:6px;height:30px;display:flex;align-items:center;justify-content:center">×</button>
+    </div>
+  `).join('');
+}
+function addModalLink(){
+  currentModalLinks.push({label:'',url:''});
+  renderModalLinks();
+}
+function updateModalLink(idx,field,val){
+  if(currentModalLinks[idx]){
+    currentModalLinks[idx][field]=val;
+  }
+}
+function removeModalLink(idx){
+  currentModalLinks.splice(idx,1);
+  renderModalLinks();
+}
+
 function updateDatalist(){
   const dl=document.getElementById('taskNamesDatalist');
   if(!dl) return;
@@ -993,14 +1128,17 @@ function updateDatalist(){
 }
 function openAddModal(){
   editId=null; currentImageData=null;
+  currentModalLinks=[];
   document.getElementById('modalTitle').textContent='เพิ่มงานใหม่';
   clearForm();
   updateDatalist();
+  renderModalLinks();
   document.getElementById('taskModal').classList.add('open');
 }
 function editTask(id){
   const t=tasks.find(x=>x.id===id); if(!t) return;
   editId=id; currentImageData=t.imageData||null;
+  currentModalLinks=t.links ? JSON.parse(JSON.stringify(t.links)) : (t.link ? [ { label: 'ลิงก์', url: t.link } ] : []);
   document.getElementById('modalTitle').textContent='แก้ไขงาน';
   populateModalDropdowns();
   updateDatalist();
@@ -1016,7 +1154,7 @@ function editTask(id){
   handleStatusChange();
   document.getElementById('fFileName').value=t.fileName||'';
   document.getElementById('fNote').value=t.note||'';
-  document.getElementById('fLink').value=t.link||'';
+  renderModalLinks();
   const prev=document.getElementById('attachPreview');
   prev.innerHTML=t.imageData?`<img src="${t.imageData}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:1px solid #ddd">`:'' ;
   editingUpdateId=null;
@@ -1027,12 +1165,17 @@ function editTask(id){
 }
 function clearForm(){
   populateModalDropdowns();
-  ['fName','fStart','fDeadline','fNote','fLink','fFileName'].forEach(id=>document.getElementById(id).value='');
+  ['fName','fStart','fDeadline','fNote','fFileName'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.value='';
+  });
+  currentModalLinks=[];
   document.getElementById('fPct').value=0;
   document.getElementById('fPctLbl').textContent='0';
   document.getElementById('fStatus').value='ยังไม่เริ่ม';
   document.getElementById('fPriority').value='ปานกลาง';
   document.getElementById('attachPreview').innerHTML='';
+  document.getElementById('fImage').value='';
   document.getElementById('fImage').value='';
   currentImageData=null;
   handleStatusChange();
@@ -1111,7 +1254,8 @@ function saveTask(){
     percent:parseInt(document.getElementById('fPct').value)||0,
     fileName:document.getElementById('fFileName').value.trim(),
     imageData:currentImageData,
-    link:document.getElementById('fLink').value,
+    links:currentModalLinks,
+    link:currentModalLinks[0] ? currentModalLinks[0].url : '',
     note:document.getElementById('fNote').value,
     completedAt,
     updates:oldTask?(oldTask.updates||[]):[],
@@ -1283,6 +1427,7 @@ function doPrint(){
   const showHist=document.getElementById('pdfHistory').checked;
   const useScreenFilters=document.getElementById('pdfUseScreenFilters').checked;
   const fullNote=document.getElementById('pdfFullNote').checked;
+  const showUpdates=document.getElementById('pdfShowUpdates').checked;
   const taskType=document.getElementById('pdfTaskType').value;
 
   let filteredTasks = [];
@@ -1431,8 +1576,27 @@ function doPrint(){
         if(t.deadline&&t.status!=='เสร็จสิ้น'){const d=new Date(t.deadline);d.setHours(0,0,0,0);const diff=Math.round((d-today)/86400000);dayLeft=`<span style="color:${diff<0?'#b10202':diff<=3?'#c0392b':'#444'};font-weight:${diff<=3?700:400}">${diff}</span>`;}
         const rowCls=t.deadline&&t.status!=='เสร็จสิ้น'&&Math.round((new Date(t.deadline).setHours(0,0,0,0)-today)/86400000)<0?'row-overdue':'';
         const attach=(t.fileName?'📎':'')+(t.imageData?'🖼️':'');
+        const lnks = t.links || (t.link ? [ { label: 'ลิงก์', url: t.link } ] : []);
+        let linkIndicator = '';
+        lnks.forEach(lnk => {
+          if(lnk.url){
+            const label = lnk.label || 'ลิงก์';
+            linkIndicator += ` <span style="font-size:7.5px;background:#eef2ff;color:#5a5ab8;padding:1px 3px;border-radius:3px;border:1px solid #c5c5f0;white-space:nowrap" title="${lnk.url}">🔗 ${label}</span>`;
+          }
+        });
+
         const completedDate=t.completedAt?new Date(t.completedAt).toLocaleDateString('th-TH'):'-';
-        return `<tr class="${rowCls}"><td>${i+1}</td><td><strong>${t.name}</strong>${attach?` <span class="attach-ico" title="${t.fileName||''}">${attach}</span>`:''}</td><td>${t.category||'-'}</td><td class="${stCls}">${t.status||'-'}</td><td class="${priCls}">${t.priority||'-'}</td><td>${t.startDate||'-'}</td><td>${t.deadline||'-'}</td><td style="text-align:center">${dayLeft}</td><td>${t.percent||0}%</td><td>${t.assigner||'-'}</td><td>${completedDate}</td><td>${noteCell(t)}</td></tr>`;
+        
+        let updList = '';
+        if(showUpdates && t.updates && t.updates.length){
+          updList = t.updates.map(u => {
+            const uDate = u.date ? new Date(u.date).toLocaleDateString('th-TH') : '';
+            return `<div style="font-size:8px;color:#555;margin-top:2px;padding-left:6px;border-left:1.5px solid #bbb;line-height:1.2;word-break:break-word">• <i>${uDate}</i>: ${u.text}</div>`;
+          }).join('');
+          if(updList) updList = `<div style="margin-top:4px;padding-top:2px;border-top:1px dashed #eee">${updList}</div>`;
+        }
+
+        return `<tr class="${rowCls}"><td>${i+1}</td><td><strong>${t.name}</strong>${attach?` <span class="attach-ico" title="${t.fileName||''}">${attach}</span>`:''}${linkIndicator}${updList}</td><td>${t.category||'-'}</td><td class="${stCls}">${t.status||'-'}</td><td class="${priCls}">${t.priority||'-'}</td><td>${t.startDate||'-'}</td><td>${t.deadline||'-'}</td><td style="text-align:center">${dayLeft}</td><td>${t.percent||0}%</td><td>${t.assigner||'-'}</td><td>${completedDate}</td><td>${noteCell(t)}</td></tr>`;
       }).join('')+'</tbody></table>'}
     `);
   }
@@ -1499,7 +1663,8 @@ function duplicateTask(id){
   document.getElementById('fPctLbl').textContent='0';
   document.getElementById('fFileName').value=t.fileName||'';
   document.getElementById('fNote').value=t.note||'';
-  document.getElementById('fLink').value=t.link||'';
+  currentModalLinks=t.links ? JSON.parse(JSON.stringify(t.links)) : (t.link ? [ { label: 'ลิงก์', url: t.link } ] : []);
+  renderModalLinks();
   
   // Calculate new deadline based on original task duration
   document.getElementById('fStart').value=getLocalDateStr();
@@ -1643,7 +1808,13 @@ function renderCompletedTasks(){
     let fileCell='';
     if(t.imageData) fileCell+=`<img class="img-thumb" src="${t.imageData}" onclick="viewImg('${t.id}')" title="ดูรูป"> `;
     if(t.fileName) fileCell+=`<span style="font-size:11px;background:#f0f0f0;padding:2px 6px;border-radius:4px;color:#555" title="${t.fileName}">📄 ${t.fileName.length>10?t.fileName.slice(0,8)+'…':t.fileName}</span>`;
-    if(t.link) fileCell+=` <a href="${t.link}" target="_blank" style="font-size:11px;color:var(--purple)" title="ลิงก์ภายนอก">🔗</a>`;
+    const lnks = t.links || (t.link ? [ { label: 'ลิงก์', url: t.link } ] : []);
+    lnks.forEach(lnk => {
+      if(lnk.url) {
+        const label = lnk.label || 'ลิงก์';
+        fileCell += ` <a href="${lnk.url}" target="_blank" style="display:inline-block;font-size:10px;background:#eef2ff;color:var(--purple-dark);padding:1px 5px;border-radius:4px;border:1px solid var(--purple-light);text-decoration:none;margin-top:2px" title="${lnk.url}">🔗 ${label}</a>`;
+      }
+    });
     if(!fileCell) fileCell='-';
 
     const completedAt=t.completedAt?`<span style="font-size:12px;color:var(--green)">${t.completedAt}</span>`:'-';
