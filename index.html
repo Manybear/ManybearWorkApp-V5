@@ -887,28 +887,95 @@ function changeHistoryTab(tab){
 function renderHistoryUpdates(){
   const el=document.getElementById('historyContent');
   if(!el) return;
-  const allUpdates=[];
+  const allActivities=[];
+  
   tasks.forEach(t=>{
-    if(t.updates && t.updates.length){
-      t.updates.forEach(u=>{
-        allUpdates.push({
-          taskId:t.id,
-          taskName:t.name,
-          taskStatus:t.status,
-          updateId:u.id,
-          date:new Date(u.date),
-          text:u.text
+    // 1. Task Creation Activity
+    const createTime = parseInt(t.id);
+    if (!isNaN(createTime) && createTime > 1500000000000) {
+      allActivities.push({
+        taskId: t.id,
+        taskName: t.name,
+        taskStatus: t.status,
+        date: new Date(createTime),
+        badgeText: '➕ สร้างงานใหม่',
+        badgeStyle: 'background:#eef2ff;color:#4338ca;border:1px solid #c7d2fe',
+        dotColor: '#4338ca',
+        text: `สร้างรายการงานใหม่: "${t.name}"${t.category ? ` (หมวด: ${t.category})` : ''}${t.assigner ? ` [ผู้สั่ง: ${t.assigner}]` : ''}`
+      });
+    }
+
+    // 2. Daily Updates / Notes Activities
+    if (t.updates && t.updates.length) {
+      t.updates.forEach(u => {
+        allActivities.push({
+          taskId: t.id,
+          taskName: t.name,
+          taskStatus: t.status,
+          date: new Date(u.date),
+          badgeText: '📝 บันทึกอัปเดต',
+          badgeStyle: 'background:var(--purple-light);color:var(--purple-dark);border:1px solid #c5c5f0',
+          dotColor: 'var(--purple)',
+          text: u.text
         });
       });
     }
+
+    // 3. Task Completion Activity
+    if (t.status === 'เสร็จสิ้น' && t.completedAt) {
+      let compDate = null;
+      if (t.completedAt.includes('/')) {
+        const parts = t.completedAt.split('/');
+        if (parts.length === 3) {
+          const year = parseInt(parts[2]) > 2500 ? parseInt(parts[2]) - 543 : parseInt(parts[2]);
+          compDate = new Date(year, parseInt(parts[1]) - 1, parseInt(parts[0]), 17, 0, 0);
+        }
+      } else {
+        compDate = new Date(t.completedAt);
+      }
+      if (compDate && !isNaN(compDate.getTime())) {
+        allActivities.push({
+          taskId: t.id,
+          taskName: t.name,
+          taskStatus: 'เสร็จสิ้น',
+          date: compDate,
+          badgeText: '✅ ทำเสร็จสิ้น',
+          badgeStyle: 'background:#d4edbc;color:#11734b;border:1px solid #a3d977',
+          dotColor: '#11734b',
+          text: `ทำเสร็จสิ้นสมบูรณ์ 100% 🎉`
+        });
+      }
+    }
+
+    // 4. Task Last Modified Activity (if modified later than creation)
+    if (t.updatedAt) {
+      const modTime = new Date(t.updatedAt).getTime();
+      if (!isNaN(modTime) && (!isNaN(createTime) && (modTime - createTime > 120000))) {
+        allActivities.push({
+          taskId: t.id,
+          taskName: t.name,
+          taskStatus: t.status,
+          date: new Date(modTime),
+          badgeText: '⚙️ อัปเดตงาน',
+          badgeStyle: 'background:#ffe6dd;color:#f46524;border:1px solid #ffbdad',
+          dotColor: '#f46524',
+          text: `ปรับปรุงข้อมูลรายการงาน (สถานะ: ${t.status}, ความคืบหน้า: ${t.percent||0}%)`
+        });
+      }
+    }
   });
-  if(allUpdates.length===0){
-    el.innerHTML='<div style="color:#aaa;text-align:center;padding:30px 0;font-size:14px">📭 ยังไม่มีประวัติการอัปเดตงานรายวัน</div>';
+
+  if(allActivities.length===0){
+    el.innerHTML='<div style="color:#aaa;text-align:center;padding:30px 0;font-size:14px">📭 ยังไม่มีประวัติกิจกรรมการทำงานรายวัน</div>';
     return;
   }
-  allUpdates.sort((a,b)=>b.date - a.date);
+
+  // Sort activities descending by date
+  allActivities.sort((a,b)=>b.date - a.date);
+
+  // Group by date string (YYYY-MM-DD)
   const grouped={};
-  allUpdates.forEach(item=>{
+  allActivities.forEach(item=>{
     const y=item.date.getFullYear();
     const m=String(item.date.getMonth()+1).padStart(2,'0');
     const d=String(item.date.getDate()).padStart(2,'0');
@@ -924,6 +991,7 @@ function renderHistoryUpdates(){
     if(!grouped[key]) grouped[key]={label:dayLabel,items:[]};
     grouped[key].items.push(item);
   });
+
   const sortedKeys=Object.keys(grouped).sort().reverse();
   const html=sortedKeys.map(key=>{
     const group=grouped[key];
@@ -931,16 +999,17 @@ function renderHistoryUpdates(){
       const timeStr=item.date.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})+' น.';
       const statusCls={'เสร็จสิ้น':'done','กำลังทำ':'inprog','เริ่มต้น':'start','วางแผน':'plan','ยังไม่เริ่ม':'notyet'}[item.taskStatus]||'plan';
       return `
-        <div style="display:flex;gap:12px;margin-bottom:12px;position:relative;padding-left:14px">
-          <div style="position:absolute;left:-4px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--purple);border:2px solid #fff;box-shadow:0 0 0 2px var(--purple-light)"></div>
+        <div style="display:flex;gap:12px;margin-bottom:14px;position:relative;padding-left:14px">
+          <div style="position:absolute;left:-4px;top:6px;width:10px;height:10px;border-radius:50%;background:${item.dotColor};border:2px solid #fff;box-shadow:0 0 0 2px rgba(0,0,0,0.08)"></div>
           <div style="flex:1">
             <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:12px;color:#888">
               <span>⏰ ${timeStr}</span>
               <span>•</span>
               <strong class="task-link" style="color:var(--purple-dark);font-weight:600" onclick="editTask('${item.taskId}')" title="คลิกเพื่อเปิดดูงานนี้">${item.taskName}</strong>
               <span class="badge ${statusCls}" style="font-size:10px;padding:1px 6px">${item.taskStatus}</span>
+              <span style="font-size:10px;padding:1px 6px;border-radius:10px;font-weight:600;${item.badgeStyle}">${item.badgeText}</span>
             </div>
-            <div style="font-size:13.5px;color:#333;margin-top:4px;padding:8px 12px;background:#f9f9ff;border-radius:8px;border-left:3px solid var(--purple);white-space:pre-wrap;line-height:1.4">${item.text}</div>
+            <div style="font-size:13.5px;color:#333;margin-top:4px;padding:8px 12px;background:#f9f9ff;border-radius:8px;border-left:3px solid ${item.dotColor};white-space:pre-wrap;line-height:1.4">${item.text}</div>
           </div>
         </div>
       `;
