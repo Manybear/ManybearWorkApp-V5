@@ -933,6 +933,17 @@ function renderHistoryUpdates(){
       } else {
         compDate = new Date(t.completedAt);
       }
+      
+      // If updatedAt is on the same day, use the precise time
+      if (t.updatedAt) {
+        const upDate = new Date(t.updatedAt);
+        if (compDate && upDate.getFullYear() === compDate.getFullYear() &&
+            upDate.getMonth() === compDate.getMonth() &&
+            upDate.getDate() === compDate.getDate()) {
+          compDate = upDate;
+        }
+      }
+
       if (compDate && !isNaN(compDate.getTime())) {
         allActivities.push({
           taskId: t.id,
@@ -965,17 +976,75 @@ function renderHistoryUpdates(){
     }
   });
 
-  if(allActivities.length===0){
+  // Smart Consolidation by Task and Calendar Date
+  const taskGroups = {};
+  allActivities.forEach(act => {
+    if (!taskGroups[act.taskId]) taskGroups[act.taskId] = [];
+    taskGroups[act.taskId].push(act);
+  });
+
+  const consolidatedActivities = [];
+  Object.keys(taskGroups).forEach(taskId => {
+    const acts = taskGroups[taskId];
+    const dateGroups = {};
+    acts.forEach(act => {
+      const y = act.date.getFullYear();
+      const m = String(act.date.getMonth() + 1).padStart(2, '0');
+      const d = String(act.date.getDate()).padStart(2, '0');
+      const dateKey = `${y}-${m}-${d}`;
+      if (!dateGroups[dateKey]) dateGroups[dateKey] = [];
+      dateGroups[dateKey].push(act);
+    });
+
+    Object.keys(dateGroups).forEach(dateKey => {
+      const dayActs = dateGroups[dateKey];
+      const hasCreated = dayActs.some(a => a.badgeText === '➕ สร้างงานใหม่');
+      const hasCompleted = dayActs.some(a => a.badgeText === '✅ ทำเสร็จสิ้น');
+      const hasModified = dayActs.some(a => a.badgeText === '⚙️ อัปเดตงาน');
+      const notes = dayActs.filter(a => a.badgeText === '📝 บันทึกอัปเดต');
+
+      if (hasCreated && hasCompleted) {
+        const compAct = dayActs.find(a => a.badgeText === '✅ ทำเสร็จสิ้น');
+        const createAct = dayActs.find(a => a.badgeText === '➕ สร้างงานใหม่');
+        const bestDate = compAct.date.getTime() > createAct.date.getTime() ? compAct.date : createAct.date;
+        
+        consolidatedActivities.push({
+          taskId: compAct.taskId,
+          taskName: compAct.taskName,
+          taskStatus: 'เสร็จสิ้น',
+          date: bestDate,
+          badgeText: '✅ เสร็จสิ้น',
+          badgeStyle: 'background:#d4edbc;color:#11734b;border:1px solid #a3d977',
+          dotColor: '#11734b',
+          text: `สร้างงานใหม่และดำเนินงานเสร็จสิ้น 100% 🎉`
+        });
+      } else {
+        if (hasCompleted) {
+          const compAct = dayActs.find(a => a.badgeText === '✅ ทำเสร็จสิ้น');
+          consolidatedActivities.push(compAct);
+        } else if (hasCreated) {
+          const createAct = dayActs.find(a => a.badgeText === '➕ สร้างงานใหม่');
+          consolidatedActivities.push(createAct);
+        } else if (hasModified) {
+          const modAct = dayActs.find(a => a.badgeText === '⚙️ อัปเดตงาน');
+          consolidatedActivities.push(modAct);
+        }
+      }
+      notes.forEach(n => consolidatedActivities.push(n));
+    });
+  });
+
+  if(consolidatedActivities.length===0){
     el.innerHTML='<div style="color:#aaa;text-align:center;padding:30px 0;font-size:14px">📭 ยังไม่มีประวัติกิจกรรมการทำงานรายวัน</div>';
     return;
   }
 
   // Sort activities descending by date
-  allActivities.sort((a,b)=>b.date - a.date);
+  consolidatedActivities.sort((a,b)=>b.date - a.date);
 
   // Group by date string (YYYY-MM-DD)
   const grouped={};
-  allActivities.forEach(item=>{
+  consolidatedActivities.forEach(item=>{
     const y=item.date.getFullYear();
     const m=String(item.date.getMonth()+1).padStart(2,'0');
     const d=String(item.date.getDate()).padStart(2,'0');
