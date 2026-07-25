@@ -215,20 +215,7 @@ tr:hover td{background:#fafafa}
         <label style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;user-select:none"><input type="checkbox" id="colShowNote" onchange="renderTasks()" style="accent-color:var(--purple)"> หมายเหตุ</label>
       </div>
     </div>
-    <div class="tbl-wrap">
-      <table>
-        <thead><tr>
-          <th class="sticky-col">จัดการ</th>
-          <th onclick="sortBy('index')" style="width:50px"># <span class="sort-icon" id="si-index"></span></th>
-          <th onclick="sortBy('name')">ชื่องาน <span class="sort-icon" id="si-name"></span></th>
-          <th onclick="sortBy('status')" style="width:140px">สถานะ & %งาน <span class="sort-icon" id="si-status"></span></th>
-          <th onclick="sortBy('deadline')" style="width:140px">ระยะเวลา (เริ่ม/ส่ง) <span class="sort-icon" id="si-deadline"></span></th>
-          <th onclick="sortBy('deadline')" style="width:90px">วันคงเหลือ <span class="sort-icon" id="si-daysleft"></span></th>
-          <th id="thFile" style="width:100px; display:none">ไฟล์/รูป</th>
-          <th id="thNote" style="width:180px; display:none">หมายเหตุ</th>
-        </tr></thead>
-        <tbody id="taskTable"></tbody>
-      </table>
+    <div class="tbl-wrap" id="tasksContent">
     </div>
     <div id="taskEmpty" class="empty" style="display:none"><span>📋</span>ยังไม่มีงาน กด "+ เพิ่มงาน" เพื่อเริ่มต้น</div>
   </div>
@@ -694,10 +681,38 @@ function renderDashboard(){
 function sortBy(col){
   if(sortCol===col) sortDir*=-1;
   else{sortCol=col;sortDir=1;}
-  document.querySelectorAll('.sort-icon').forEach(el=>el.textContent='');
-  const icon=document.getElementById('si-'+col);
-  if(icon) icon.textContent=sortDir===1?'▲':'▼';
   renderTasks();
+}
+function getSortIcon(col){
+  if(sortCol===col){
+    return sortDir===1?' ▲':' ▼';
+  }
+  return '';
+}
+function getFriendlyDeadlineLabel(dateStr){
+  if(!dateStr) return '📁 ยังไม่ได้กำหนดวันส่ง';
+  const today=new Date(); today.setHours(0,0,0,0);
+  const d=new Date(dateStr); d.setHours(0,0,0,0);
+  const diff=Math.round((d-today)/86400000);
+  
+  const formattedDate=d.toLocaleDateString('th-TH',{
+    weekday:'long',
+    day:'numeric',
+    month:'long',
+    year:'numeric'
+  });
+  
+  let label=`📅 กำหนดส่ง: ${formattedDate}`;
+  if(diff<0){
+    label+=` <span style="color:var(--red);font-weight:700">(เลยกำหนดมา ${Math.abs(diff)} วัน ⚠️)</span>`;
+  }else if(diff===0){
+    label+=` <span style="color:var(--orange);font-weight:700">(วันนี้ ⏰)</span>`;
+  }else if(diff===1){
+    label+=` <span style="color:var(--purple);font-weight:600">(พรุ่งนี้)</span>`;
+  }else{
+    label+=` <span style="color:#555">(อีก ${diff} วัน)</span>`;
+  }
+  return label;
 }
 function applySort(list){
   const priOrder={'ด่วน':0,'สูง':1,'ปานกลาง':2,'ต่ำ':3};
@@ -737,10 +752,6 @@ function renderTasks(){
   localStorage.setItem('mb_col_file', showFile);
   localStorage.setItem('mb_col_note', showNote);
 
-  // Update header elements visibility
-  document.getElementById('thFile').style.display=showFile?'':'none';
-  document.getElementById('thNote').style.display=showNote?'':'none';
-
   populateFilters();
   const search=document.getElementById('searchInput').value.toLowerCase();
   const cat=document.getElementById('filterCat').value;
@@ -763,84 +774,121 @@ function renderTasks(){
     return true;
   });
 
-  applySort(filtered);
-
-  const tbody=document.getElementById('taskTable');
+  const tasksContent=document.getElementById('tasksContent');
   const empty=document.getElementById('taskEmpty');
-  if(filtered.length===0){tbody.innerHTML='';empty.style.display='block';return;}
+  if(filtered.length===0){
+    if(tasksContent) tasksContent.innerHTML='';
+    empty.style.display='block';
+    return;
+  }
   empty.style.display='none';
 
+  // Group filtered tasks by deadline
+  const grouped={};
+  filtered.forEach(t=>{
+    const key=t.deadline||'no-deadline';
+    if(!grouped[key]) grouped[key]=[];
+    grouped[key].push(t);
+  });
+
+  // Sort groups by deadline date ascending, with 'no-deadline' at the end
+  const sortedKeys=Object.keys(grouped).sort((a,b)=>{
+    if(a==='no-deadline') return 1;
+    if(b==='no-deadline') return -1;
+    return new Date(a)-new Date(b);
+  });
+
   const today=new Date(); today.setHours(0,0,0,0);
-  tbody.innerHTML=filtered.map((t,i)=>{
-    const statusCls={'เสร็จสิ้น':'done','กำลังทำ':'inprog','เริ่มต้น':'start','วางแผน':'plan','ยังไม่เริ่ม':'notyet'}[t.status]||'plan';
-    const priCls={'ด่วน':'urgent','สูง':'high','ปานกลาง':'mid','ต่ำ':'low'}[t.priority]||'mid';
-    let dayLeft='-';
-    if(t.deadline){
-      const d=new Date(t.deadline); d.setHours(0,0,0,0);
-      const diff=Math.round((d-today)/86400000);
-      const color=diff<0?'var(--red)':diff<=3?'var(--orange)':'#555';
-      dayLeft=`<span style="color:${color};font-weight:${diff<=3?700:400}">${diff}</span>`;
-    }
-    const pct=t.percent||0;
-    const barColor=pct>=100?'#11734b':pct>=60?'#8989eb':'#f46524';
 
-    // file/image cell content
-    let fileCell='';
-    if(t.imageData) fileCell+=`<img class="img-thumb" src="${t.imageData}" onclick="viewImg('${t.id}')" title="ดูรูป"> `;
-    if(t.fileName) fileCell+=`<span style="font-size:11px;background:#f0f0f0;padding:2px 6px;border-radius:4px;color:#555" title="${t.fileName}">📄 ${t.fileName.length>10?t.fileName.slice(0,8)+'…':t.fileName}</span>`;
-    const lnks = t.links || (t.link ? [ { label: 'ลิงก์', url: t.link } ] : []);
-    lnks.forEach(lnk => {
-      if(lnk.url) {
-        const label = lnk.label || 'ลิงก์';
-        fileCell += ` <a href="${lnk.url}" target="_blank" style="display:inline-block;font-size:10px;background:#eef2ff;color:var(--purple-dark);padding:1px 5px;border-radius:4px;border:1px solid var(--purple-light);text-decoration:none;margin-top:2px" title="${lnk.url}">🔗 ${label}</a>`;
-      }
-    });
-    if(!fileCell) fileCell='-';
+  tasksContent.innerHTML=sortedKeys.map(key=>{
+    const groupTasks=grouped[key];
+    const groupLabel=getFriendlyDeadlineLabel(key==='no-deadline'?'':key);
+    
+    // Sort tasks inside group by selected sort column
+    applySort(groupTasks);
 
-    const updCount=(t.updates||[]).length;
-    const updBadge=updCount?`<span style="font-size:10px;background:var(--purple-light);color:var(--purple-dark);padding:1px 5px;border-radius:10px;margin-left:5px" title="จำนวนอัปเดตงานรายวัน">📝 ${updCount}</span>`:'';
+    const tableRows=groupTasks.map((t,idx)=>{
+      const statusCls={'เสร็จสิ้น':'done','กำลังทำ':'inprog','เริ่มต้น':'start','วางแผน':'plan','ยังไม่เริ่ม':'notyet'}[t.status]||'plan';
+      const priCls={'ด่วน':'urgent','สูง':'high','ปานกลาง':'mid','ต่ำ':'low'}[t.priority]||'mid';
+      const pct=t.percent||0;
+      const barColor=pct>=100?'#11734b':pct>=60?'#8989eb':'#f46524';
 
-    const catBadge=t.category?`<span class="badge" style="background:var(--purple-light);color:var(--purple-dark);font-size:10px;padding:1px 6px">${t.category}</span>`:'';
-    const priBadge=t.priority?`<span class="badge ${priCls}" style="font-size:10px;padding:1px 6px">${t.priority}</span>`:'';
-    const asgLabel=t.assigner?`<span style="font-size:11px;color:#888">👤 ${t.assigner}</span>`:'';
+      // file/image cell content
+      let fileCell='';
+      if(t.imageData) fileCell+=`<img class="img-thumb" src="${t.imageData}" onclick="viewImg('${t.id}')" title="ดูรูป"> `;
+      if(t.fileName) fileCell+=`<span style="font-size:11px;background:#f0f0f0;padding:2px 6px;border-radius:4px;color:#555" title="${t.fileName}">📄 ${t.fileName.length>10?t.fileName.slice(0,8)+'…':t.fileName}</span>`;
+      const lnks=t.links||(t.link?[{label:'ลิงก์',url:t.link}]:[]);
+      lnks.forEach(lnk=>{
+        if(lnk.url){
+          const label=lnk.label||'ลิงก์';
+          fileCell+=` <a href="${lnk.url}" target="_blank" style="display:inline-block;font-size:10px;background:#eef2ff;color:var(--purple-dark);padding:1px 5px;border-radius:4px;border:1px solid var(--purple-light);text-decoration:none;margin-top:2px" title="${lnk.url}">🔗 ${label}</a>`;
+        }
+      });
+      if(!fileCell) fileCell='-';
 
-    const nameHtml=`
-      <div style="display:flex;align-items:center;flex-wrap:wrap">
-        <strong class="task-link" onclick="editTask('${t.id}')" title="คลิกเพื่อแก้ไขงานนี้">${t.name}</strong>${updBadge}
-      </div>
-      <div style="margin-top:4px;display:flex;align-items:center;flex-wrap:wrap;gap:4px">
-        ${catBadge} ${priBadge} ${asgLabel}
+      const updCount=(t.updates||[]).length;
+      const updBadge=updCount?`<span style="font-size:10px;background:var(--purple-light);color:var(--purple-dark);padding:1px 5px;border-radius:10px;margin-left:5px" title="จำนวนอัปเดตงานรายวัน">📝 ${updCount}</span>`:'';
+
+      const catBadge=t.category?`<span class="badge" style="background:var(--purple-light);color:var(--purple-dark);font-size:10px;padding:1px 6px">${t.category}</span>`:'';
+      const priBadge=t.priority?`<span class="badge ${priCls}" style="font-size:10px;padding:1px 6px">${t.priority}</span>`:'';
+      const asgLabel=t.assigner?`<span style="font-size:11px;color:#888">👤 ${t.assigner}</span>`:'';
+
+      const nameHtml=`
+        <div style="display:flex;align-items:center;flex-wrap:wrap">
+          <strong class="task-link" onclick="editTask('${t.id}')" title="คลิกเพื่อแก้ไขงานนี้">${t.name}</strong>${updBadge}
+        </div>
+        <div style="margin-top:4px;display:flex;align-items:center;flex-wrap:wrap;gap:4px">
+          ${catBadge} ${priBadge} ${asgLabel}
+        </div>
+      `;
+
+      const statusProgressHtml=`
+        <div style="margin-bottom:4px"><span class="badge ${statusCls}">${t.status||'-'}</span></div>
+        <div style="display:flex;align-items:center;gap:4px">
+          <div class="mini-bar" style="width:65px"><div class="mini-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+          <span style="font-size:11px;color:#666">${pct}%</span>
+        </div>
+      `;
+
+      return `<tr>
+        <td class="sticky-col" style="white-space:nowrap">
+          <button class="btn btn-sm btn-ghost" onclick="editTask('${t.id}')" title="แก้ไข">✏️</button>
+          <button class="btn btn-sm btn-ghost" onclick="duplicateTask('${t.id}')" title="คัดลอกงาน">📋</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteTask('${t.id}')" title="ลบ">🗑</button>
+        </td>
+        <td style="color:#888">${idx+1}</td>
+        <td>${nameHtml}</td>
+        <td>${statusProgressHtml}</td>
+        <td style="font-size:11px;color:#aaa">เริ่ม: ${t.startDate||'-'}</td>
+        ${showFile?`<td style="white-space:nowrap">${fileCell}</td>`:''}
+        ${showNote?`<td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#888" title="${t.note||''}">${t.note||'-'}</td>`:''}
+      </tr>`;
+    }).join('');
+
+    return `
+      <div class="month-group" style="margin-bottom:20px">
+        <div class="month-label" style="background:var(--purple-light);color:var(--purple-dark);font-weight:700;padding:8px 12px;border-radius:8px;margin-bottom:8px;font-size:13px;display:flex;justify-content:space-between;align-items:center">
+          <span>${groupLabel}</span>
+          <span style="font-size:11px;background:rgba(255,255,255,0.7);padding:2px 8px;border-radius:10px">${groupTasks.length} งาน</span>
+        </div>
+        <table style="width:100%">
+          <thead><tr>
+            <th class="sticky-col" style="width:80px">จัดการ</th>
+            <th onclick="sortBy('index')" style="width:40px;cursor:pointer">#${getSortIcon('index')}</th>
+            <th onclick="sortBy('name')" style="cursor:pointer">ชื่องาน${getSortIcon('name')}</th>
+            <th onclick="sortBy('status')" style="width:130px;cursor:pointer">สถานะ & %งาน${getSortIcon('status')}</th>
+            <th onclick="sortBy('startDate')" style="width:100px;cursor:pointer">วันเริ่มต้น${getSortIcon('startDate')}</th>
+            ${showFile?`<th style="width:100px">ไฟล์/รูป</th>`:''}
+            ${showNote?`<th style="width:160px">หมายเหตุ</th>`:''}
+          </tr></thead>
+          <tbody>
+            ${tableRows}
+          </tbody>
+        </table>
       </div>
     `;
-
-    const statusProgressHtml=`
-      <div style="margin-bottom:4px"><span class="badge ${statusCls}">${t.status||'-'}</span></div>
-      <div style="display:flex;align-items:center;gap:4px">
-        <div class="mini-bar" style="width:65px"><div class="mini-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
-        <span style="font-size:11px;color:#666">${pct}%</span>
-      </div>
-    `;
-
-    const durationHtml=`
-      <div style="font-size:11px;color:#aaa;line-height:1.2">เริ่ม: ${t.startDate||'-'}</div>
-      <div style="font-size:12px;color:var(--gray4);font-weight:600;line-height:1.2">ส่ง: ${t.deadline||'-'}</div>
-    `;
-
-    return `<tr>
-      <td class="sticky-col" style="white-space:nowrap">
-        <button class="btn btn-sm btn-ghost" onclick="editTask('${t.id}')" title="แก้ไข">✏️</button>
-        <button class="btn btn-sm btn-ghost" onclick="duplicateTask('${t.id}')" title="คัดลอกงาน">📋</button>
-        <button class="btn btn-sm btn-danger" onclick="deleteTask('${t.id}')" title="ลบ">🗑</button>
-      </td>
-      <td style="color:#888">${i+1}</td>
-      <td>${nameHtml}</td>
-      <td>${statusProgressHtml}</td>
-      <td>${durationHtml}</td>
-      <td style="text-align:center">${dayLeft}</td>
-      ${showFile?`<td style="white-space:nowrap">${fileCell}</td>`:''}
-      ${showNote?`<td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#888" title="${t.note||''}">${t.note||'-'}</td>`:''}
-    </tr>`;
   }).join('');
+}
 }
 
 function viewImg(id){
