@@ -200,9 +200,11 @@ tr.group-divider-row:hover td{background:var(--purple-light) !important}
       <input type="text" id="searchInput" placeholder="🔍 ค้นหาชื่องาน..." style="min-width:180px" oninput="renderTasks()">
       <select id="filterCat" onchange="renderTasks()"><option value="">ทุกหมวดหมู่</option></select>
       <select id="filterStatus" onchange="renderTasks()">
-        <option value="">ทุกสถานะ (ที่ยังไม่เสร็จ)</option>
+        <option value="all">ทุกสถานะ (รวมที่เสร็จแล้ว)</option>
+        <option value="active">เฉพาะงานที่ยังไม่เสร็จ</option>
         <option>กำลังทำ</option><option>เริ่มต้น</option>
         <option>วางแผน</option><option>ยังไม่เริ่ม</option>
+        <option>เสร็จสิ้น</option>
       </select>
       <select id="filterPriority" onchange="renderTasks()">
         <option value="">ทุกความสำคัญ</option>
@@ -752,7 +754,6 @@ function renderTasks(){
   const assigner=document.getElementById('filterAssigner').value;
 
   let filtered=tasks.filter(t=>{
-    if(t.status==='เสร็จสิ้น') return false;
     if(search){
       const hasMatch=t.name.toLowerCase().includes(search)||
                        (t.note&&t.note.toLowerCase().includes(search))||
@@ -760,7 +761,14 @@ function renderTasks(){
       if(!hasMatch) return false;
     }
     if(cat&&t.category!==cat) return false;
-    if(status&&t.status!==status) return false;
+    
+    // Status filter logic
+    if(status==='active'){
+      if(t.status==='เสร็จสิ้น') return false;
+    } else if(status!=='all' && status!==''){
+      if(t.status!==status) return false;
+    }
+    
     if(priority&&t.priority!==priority) return false;
     if(assigner&&t.assigner!==assigner) return false;
     return true;
@@ -854,9 +862,13 @@ function renderTasks(){
       const priBadge=t.priority?`<span class="badge ${priCls}" style="font-size:10px;padding:1px 6px">${t.priority}</span>`:'';
       const asgLabel=t.assigner?`<span style="font-size:11px;color:#888">👤 ${t.assigner}</span>`:'';
 
+      const isCompleted = t.status === 'เสร็จสิ้น';
+      const nameStyle = isCompleted ? 'text-decoration: line-through; opacity: 0.6; font-weight: normal;' : '';
+      const rowStyle = isCompleted ? 'style="opacity: 0.75; background: #fafafa;"' : '';
+
       const nameHtml=`
         <div style="display:flex;align-items:center;flex-wrap:wrap">
-          <strong class="task-link" onclick="editTask('${t.id}')" title="คลิกเพื่อแก้ไขงานนี้">${t.name}</strong>${updBadge}
+          <strong class="task-link" style="${nameStyle}" onclick="editTask('${t.id}')" title="คลิกเพื่อแก้ไขงานนี้">${t.name}</strong>${updBadge}
         </div>
         <div style="margin-top:4px;display:flex;align-items:center;flex-wrap:wrap;gap:4px">
           ${catBadge} ${priBadge} ${asgLabel}
@@ -876,7 +888,7 @@ function renderTasks(){
         <div style="font-size:12px;color:var(--gray4);font-weight:600;line-height:1.2">ส่ง: ${t.deadline||'-'}</div>
       `;
 
-      html += `<tr>
+      html += `<tr ${rowStyle}>
         <td class="sticky-col" style="white-space:nowrap">
           <button class="btn btn-sm btn-ghost" onclick="editTask('${t.id}')" title="แก้ไข">✏️</button>
           <button class="btn btn-sm btn-ghost" onclick="duplicateTask('${t.id}')" title="คัดลอกงาน">📋</button>
@@ -919,7 +931,8 @@ function populateFilters(){
 // ============ (โค้ดดั้งเดิมอื่นๆ ต่อเนื่องทำงานครบถ้วน...) ============
 function clearFilters(){
   document.getElementById('searchInput').value='';
-  ['filterCat','filterStatus','filterPriority','filterAssigner'].forEach(id=>document.getElementById(id).value='');
+  ['filterCat','filterPriority','filterAssigner'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('filterStatus').value='all';
   renderTasks();
 }
 
@@ -1572,7 +1585,7 @@ function getFilteredTasks(type){
     const cat=(document.getElementById('filterCat')||{value:''}).value;
     const status=(document.getElementById('filterStatus')||{value:''}).value;
     const priority=(document.getElementById('filterPriority')||{value:''}).value;
-    const assigner=(document.getElementById('filterAssigner')||{value:''}).value;
+    const assigner=(document.getElementById('filterAssigner').value);
     return tasks.filter(t=>{
       if(type === 'active' && t.status==='เสร็จสิ้น') return false;
       if(search&&!t.name.toLowerCase().includes(search)) return false;
