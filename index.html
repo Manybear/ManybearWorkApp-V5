@@ -1884,7 +1884,14 @@ function getFilteredTasks(type){
       if(type === 'active' && t.status==='เสร็จสิ้น') return false;
       if(search&&!t.name.toLowerCase().includes(search)) return false;
       if(cat&&t.category!==cat) return false;
-      if(status&&t.status!==status) return false;
+      
+      // Status filter logic
+      if(status==='active'){
+        if(t.status==='เสร็จสิ้น') return false;
+      } else if(status!=='all' && status!==''){
+        if(t.status!==status) return false;
+      }
+      
       if(priority&&t.priority!==priority) return false;
       if(assigner&&t.assigner!==assigner) return false;
       return true;
