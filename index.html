@@ -22,13 +22,16 @@
   --gray:#f5f5f5;--gray2:#e0e0e0;--gray3:#888;--gray4:#444;
   --white:#fff;--text:#1f1f1f;
   --font:'Segoe UI',Arial,sans-serif;
+  --nav-text:#fff;
+  --nav-btn-bg:rgba(255,255,255,.15);
+  --nav-btn-hover:rgba(255,255,255,.28);
 }
 body{font-family:var(--font);background:#f0f0f8;color:var(--text);font-size:14px}
-nav{background:var(--purple);color:#fff;display:flex;align-items:center;padding:0 20px;height:54px;gap:8px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+nav{background:var(--purple);color:var(--nav-text);display:flex;align-items:center;padding:0 20px;height:54px;gap:8px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.15)}
 nav .logo{font-size:18px;font-weight:700;letter-spacing:1px;flex:1}
-.nav-btn{background:rgba(255,255,255,.15);border:none;color:#fff;padding:6px 14px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;transition:.2s}
-.nav-btn:hover{background:rgba(255,255,255,.28)}
-.nav-btn.active{background:#fff;color:var(--purple)}
+.nav-btn{background:var(--nav-btn-bg);border:none;color:var(--nav-text);padding:6px 14px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;transition:.2s}
+.nav-btn:hover{background:var(--nav-btn-hover)}
+.nav-btn.active{background:var(--nav-text);color:var(--purple)}
 .page{display:none;padding:20px;max-width:1200px;margin:0 auto}
 .page.active{display:block}
 .card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.08);margin-bottom:16px}
@@ -54,6 +57,178 @@ th:hover{background:var(--purple-dark)}
 th .sort-icon{font-size:10px;margin-left:4px;opacity:.7}
 td{padding:9px 12px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
 tr:hover td{background:#fafafa}
+/* MODERN CARD LAYOUT STYLES */
+.date-group {
+  margin-bottom: 24px;
+}
+.date-group-header {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--purple-dark);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 2px solid var(--purple-light);
+  padding-bottom: 6px;
+  user-select: none;
+}
+.date-group-header .count-badge {
+  font-size: 11px;
+  background: var(--purple-light);
+  color: var(--purple-dark);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+.task-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.task-card {
+  background: #fff;
+  border: 1.5px solid #ebebef;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  position: relative;
+}
+.task-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  border-color: var(--purple);
+}
+.task-card.completed {
+  opacity: 0.78;
+  background: #fafafc;
+  border-color: var(--gray2);
+}
+.task-card.completed .task-title {
+  text-decoration: line-through;
+  color: #888;
+  font-weight: normal;
+}
+.card-content-wrap {
+  display: flex;
+  padding: 14px 18px;
+  align-items: center;
+  gap: 16px;
+}
+.priority-strip {
+  width: 5px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+}
+.priority-strip.urgent { background: #b10202; }
+.priority-strip.high { background: var(--red); }
+.priority-strip.mid { background: #f39c12; }
+.priority-strip.low { background: var(--green); }
+
+.task-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.task-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.task-title:hover {
+  color: var(--purple);
+}
+.latest-update {
+  font-size: 12.5px;
+  color: #444;
+  background: #f6f6fc;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border-left: 3px solid var(--purple);
+  margin: 2px 0;
+  white-space: pre-wrap;
+  line-height: 1.4;
+}
+.meta-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 12px;
+  color: #888;
+}
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.card-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-shrink: 0;
+}
+.progress-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  width: 90px;
+}
+.mini-bar-outer {
+  width: 100%;
+  height: 6px;
+  background: var(--gray2);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.mini-bar-inner {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.3s;
+}
+.pct-text {
+  font-size: 11px;
+  font-weight: 600;
+  color: #666;
+}
+.action-buttons {
+  display: flex;
+  gap: 4px;
+}
+.action-btn {
+  background: #f5f5f5;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: background 0.2s, transform 0.1s;
+}
+.action-btn:hover {
+  background: #e5e5e5;
+  transform: scale(1.05);
+}
+.action-btn.delete:hover {
+  background: var(--red-light);
+  color: var(--red);
+}
 .badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
 .badge.done{background:var(--green-light);color:var(--green)}
 .badge.inprog{background:var(--blue-light);color:var(--blue-dark)}
@@ -101,7 +276,7 @@ tr:hover td{background:#fafafa}
 .add-tag-row input{flex:1;padding:7px 12px;border:1px solid var(--gray2);border-radius:8px;font-size:13px}
 @media print{
   nav,.filter-bar,.btn,.modal-bg,#addBtn,#pdfBtn,#notiBar,
-  #page-dashboard,#page-tasks,#page-history,#page-settings{display:none!important}
+  #page-dashboard,#page-tasks,#page-completed,#page-history,#page-settings{display:none!important}
   body{background:#fff}
   @page{size:A4 landscape;margin:0}
 }
@@ -146,10 +321,10 @@ tr:hover td{background:#fafafa}
   <div class="noti-inner">
     <span style="font-size:20px">🔔</span>
     <div style="flex:1">
-      <div class="noti-title">⚠️ งานที่ใกล้ถึงกำหนด (ภายใน 3 วัน) ยังไม่เสร็จ!</div>
+      <div class="noti-title">⚠️ งานที่เลยกำหนดหรือใกล้ส่ง (ภายใน 3 วัน) ยังไม่เสร็จ!</div>
       <div class="noti-list" id="notiList"></div>
     </div>
-    <span class="noti-close" onclick="document.getElementById('notiBar').style.display='none'">×</span>
+    <span class="noti-close" onclick="sessionStorage.setItem('mb_noti_dismissed','true'); isNotiDismissed=true; document.getElementById('notiBar').style.display='none'">×</span>
   </div>
 </div>
 
@@ -157,6 +332,7 @@ tr:hover td{background:#fafafa}
   <span class="logo">🐻 MANYBEAR</span>
   <button class="nav-btn active" onclick="showPage('dashboard',this)">Dashboard</button>
   <button class="nav-btn" onclick="showPage('tasks',this)">รายการงาน</button>
+  <button class="nav-btn" onclick="showPage('completed',this)">งานที่เสร็จสิ้น</button>
   <button class="nav-btn" onclick="showPage('history',this)">History</button>
   <button class="nav-btn" onclick="showPage('settings',this)">ตั้งค่า</button>
   <button class="btn btn-orange" id="addBtn" onclick="openAddModal()" style="margin-left:12px">+ เพิ่มงาน</button>
@@ -181,6 +357,10 @@ tr:hover td{background:#fafafa}
     <div class="sec-title">🚨 งานเลยกำหนดหรือใกล้เดดไลน์ (≤3 วัน)</div>
     <div id="urgentList"></div>
   </div>
+  <div class="card">
+    <div class="sec-title">👤 สรุปงานตามผู้สั่งงาน</div>
+    <div id="dashAssignerTable"></div>
+  </div>
 </div>
 
 <!-- TASKS -->
@@ -190,9 +370,11 @@ tr:hover td{background:#fafafa}
       <input type="text" id="searchInput" placeholder="🔍 ค้นหาชื่องาน..." style="min-width:180px" oninput="renderTasks()">
       <select id="filterCat" onchange="renderTasks()"><option value="">ทุกหมวดหมู่</option></select>
       <select id="filterStatus" onchange="renderTasks()">
-        <option value="">ทุกสถานะ</option>
-        <option>เสร็จสิ้น</option><option>กำลังทำ</option><option>เริ่มต้น</option>
+        <option value="all">ทุกสถานะ (รวมที่เสร็จแล้ว)</option>
+        <option value="active">เฉพาะงานที่ยังไม่เสร็จ</option>
+        <option>กำลังทำ</option><option>เริ่มต้น</option>
         <option>วางแผน</option><option>ยังไม่เริ่ม</option>
+        <option>เสร็จสิ้น</option>
       </select>
       <select id="filterPriority" onchange="renderTasks()">
         <option value="">ทุกความสำคัญ</option>
@@ -200,37 +382,68 @@ tr:hover td{background:#fafafa}
       </select>
       <select id="filterAssigner" onchange="renderTasks()"><option value="">ทุกผู้สั่งงาน</option></select>
       <button class="btn btn-ghost btn-sm" onclick="clearFilters()">ล้างตัวกรอง</button>
+      <select id="filterSort" onchange="sortFromDropdown(this.value)" style="min-width:140px">
+        <option value="index">↕️ เรียงลำดับดั้งเดิม</option>
+        <option value="name">🔤 ชื่องาน (ก-ฮ)</option>
+        <option value="priority">🔥 ความสำคัญ</option>
+        <option value="status">📊 สถานะ</option>
+        <option value="percent">📈 ความคืบหน้า (%)</option>
+        <option value="deadline">📅 กำหนดส่ง (เร็ว-ช้า)</option>
+      </select>
+      
+      <div style="display:flex;align-items:center;gap:12px;margin-left:auto;font-size:12px;color:var(--gray4);background:#fbfbfe;padding:4px 10px;border-radius:20px;border:1px solid #ebebef">
+        <span style="font-weight:600;color:var(--purple)">⚙️ แสดงข้อมูล:</span>
+        <label style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;user-select:none"><input type="checkbox" id="colShowFile" onchange="renderTasks()" style="accent-color:var(--purple)"> ไฟล์/รูป/ลิงก์</label>
+        <label style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;user-select:none"><input type="checkbox" id="colShowNote" onchange="renderTasks()" style="accent-color:var(--purple)"> หมายเหตุ</label>
+      </div>
     </div>
-    <div class="tbl-wrap">
-      <table>
-        <thead><tr>
-          <th class="sticky-col">จัดการ</th>
-          <th onclick="sortBy('index')"># <span class="sort-icon" id="si-index"></span></th>
-          <th onclick="sortBy('name')">ชื่องาน <span class="sort-icon" id="si-name"></span></th>
-          <th>หมวด</th>
-          <th onclick="sortBy('status')">สถานะ <span class="sort-icon" id="si-status"></span></th>
-          <th onclick="sortBy('priority')">ความสำคัญ <span class="sort-icon" id="si-priority"></span></th>
-          <th onclick="sortBy('startDate')">เริ่ม <span class="sort-icon" id="si-startDate"></span></th>
-          <th onclick="sortBy('deadline')">กำหนดส่ง <span class="sort-icon" id="si-deadline"></span></th>
-          <th onclick="sortBy('deadline')">วันคงเหลือ <span class="sort-icon" id="si-daysleft"></span></th>
-          <th onclick="sortBy('percent')">%งาน <span class="sort-icon" id="si-percent"></span></th>
-          <th>ผู้สั่งงาน</th>
-          <th>ไฟล์/รูป</th>
-          <th onclick="sortBy('completedAt')">เสร็จจริงวันที่ <span class="sort-icon" id="si-completedAt"></span></th>
-          <th>หมายเหตุ</th>
-          <th>อัพเดท</th>
-        </tr></thead>
-        <tbody id="taskTable"></tbody>
-      </table>
-    </div>
+    <div id="taskTable" class="task-cards-container"></div>
     <div id="taskEmpty" class="empty" style="display:none"><span>📋</span>ยังไม่มีงาน กด "+ เพิ่มงาน" เพื่อเริ่มต้น</div>
+  </div>
+</div>
+
+<!-- COMPLETED -->
+<!-- COMPLETED -->
+<div class="page" id="page-completed">
+  <div class="card">
+    <div class="filter-bar">
+      <input type="text" id="completedSearchInput" placeholder="🔍 ค้นหางานที่เสร็จ..." style="min-width:180px" oninput="renderCompletedTasks()">
+      <select id="completedFilterCat" onchange="renderCompletedTasks()"><option value="">ทุกหมวดหมู่</option></select>
+      <select id="completedFilterPriority" onchange="renderCompletedTasks()">
+        <option value="">ทุกความสำคัญ</option>
+        <option>ด่วน</option><option>สูง</option><option>ปานกลาง</option><option>ต่ำ</option>
+      </select>
+      <select id="completedFilterAssigner" onchange="renderCompletedTasks()"><option value="">ทุกผู้สั่งงาน</option></select>
+      <button class="btn btn-ghost btn-sm" onclick="clearCompletedFilters()">ล้างตัวกรอง</button>
+      <select id="completedFilterSort" onchange="sortCompletedFromDropdown(this.value)" style="min-width:140px">
+        <option value="completedAt">📅 เสร็จจริงล่าสุด</option>
+        <option value="name">🔤 ชื่องาน (ก-ฮ)</option>
+        <option value="priority">🔥 ความสำคัญ</option>
+        <option value="deadline">🏁 วันกำหนดส่ง</option>
+      </select>
+      
+      <div style="display:flex;align-items:center;gap:12px;margin-left:auto;font-size:12px;color:var(--gray4);background:#fbfbfe;padding:4px 10px;border-radius:20px;border:1px solid #ebebef">
+        <span style="font-weight:600;color:var(--purple)">⚙️ แสดงข้อมูล:</span>
+        <label style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;user-select:none"><input type="checkbox" id="compColShowFile" onchange="renderCompletedTasks()" style="accent-color:var(--purple)"> ไฟล์/รูป/ลิงก์</label>
+        <label style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;user-select:none"><input type="checkbox" id="compColShowCompletedAt" onchange="renderCompletedTasks()" style="accent-color:var(--purple)"> เสร็จจริงวันที่</label>
+        <label style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;user-select:none"><input type="checkbox" id="compColShowNote" onchange="renderCompletedTasks()" style="accent-color:var(--purple)"> หมายเหตุ</label>
+      </div>
+    </div>
+    <div id="completedTaskTable" class="task-cards-container"></div>
+    <div id="completedTaskEmpty" class="empty" style="display:none"><span>📋</span>ยังไม่มีงานที่เสร็จสิ้น</div>
   </div>
 </div>
 
 <!-- HISTORY -->
 <div class="page" id="page-history">
   <div class="card">
-    <div class="sec-title">📅 ประวัติงาน (รายเดือน)</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;border-bottom:2px solid var(--purple-light);padding-bottom:10px;margin-bottom:16px">
+      <div class="sec-title" style="margin:0">📅 ประวัติการทำงาน</div>
+      <div style="display:flex;gap:6px">
+        <button id="btnHistCompleted" class="btn btn-sm btn-primary" onclick="changeHistoryTab('completed')">📁 งานที่เสร็จแล้ว</button>
+        <button id="btnHistUpdates" class="btn btn-sm btn-ghost" onclick="changeHistoryTab('updates')">📝 ประวัติการอัปเดต (Timeline)</button>
+      </div>
+    </div>
     <div id="historyContent"></div>
   </div>
 </div>
@@ -238,6 +451,23 @@ tr:hover td{background:#fafafa}
 <!-- SETTINGS -->
 <div class="page" id="page-settings">
   <div class="card">
+    <div class="settings-section" style="border-bottom: 1px solid var(--gray2); padding-bottom: 20px; margin-bottom: 20px">
+      <div class="sec-title">🎨 ธีมสีแอปพลิเคชัน (Theme Color)</div>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+        <span style="font-size:13px;color:var(--gray3)">เลือกสีธีมด่วน:</span>
+        <button type="button" onclick="setAppTheme('#8989eb')" style="width:28px;height:28px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 4px rgba(0,0,0,.3);background:#8989eb;cursor:pointer" title="ม่วงดั้งเดิม"></button>
+        <button type="button" onclick="setAppTheme('#707a8a')" style="width:28px;height:28px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 4px rgba(0,0,0,.3);background:#707a8a;cursor:pointer" title="เทาสปอร์ต"></button>
+        <button type="button" onclick="setAppTheme('#f46524')" style="width:28px;height:28px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 4px rgba(0,0,0,.3);background:#f46524;cursor:pointer" title="ส้มสดใส"></button>
+        <button type="button" onclick="setAppTheme('#c0392b')" style="width:28px;height:28px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 4px rgba(0,0,0,.3);background:#c0392b;cursor:pointer" title="แดงโมเดิร์น"></button>
+        <button type="button" onclick="setAppTheme('#ffffff')" style="width:28px;height:28px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 4px rgba(0,0,0,.3);background:#ffffff;cursor:pointer" title="ขาวมินิมอล"></button>
+        <button type="button" onclick="setAppTheme('#11734b')" style="width:28px;height:28px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 4px rgba(0,0,0,.3);background:#11734b;cursor:pointer" title="เขียวมินต์"></button>
+        <button type="button" onclick="setAppTheme('#3b82f6')" style="width:28px;height:28px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 4px rgba(0,0,0,.3);background:#3b82f6;cursor:pointer" title="ฟ้าพาสเทล"></button>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--gray3)">
+        <span>🎨 หรือเลือกสีที่ต้องการเอง:</span>
+        <input type="color" id="themeCustomPicker" onchange="setAppTheme(this.value)" style="border:1px solid var(--gray2);border-radius:4px;width:50px;height:28px;padding:1px;cursor:pointer">
+      </div>
+    </div>
     <div class="settings-section">
       <div class="sec-title">🗂️ หมวดหมู่งาน</div>
       <div class="tag-list" id="catTags"></div>
@@ -260,6 +490,8 @@ tr:hover td{background:#fafafa}
         <button class="btn btn-primary" onclick="exportJSON()">📤 Export Backup (JSON)</button>
         <label class="btn btn-ghost" style="cursor:pointer">📥 Import Backup <input type="file" accept=".json" onchange="importJSON(event)" style="display:none"></label>
         <button class="btn btn-ghost" onclick="exportCSV()">📊 Export CSV</button>
+        <button class="btn btn-ghost" onclick="copyBackupCode()">📋 คัดลอกรหัสสำรองข้อมูล</button>
+        <button class="btn btn-ghost" onclick="restoreBackupCodePrompt()">📥 วางรหัสสำรองข้อมูล</button>
       </div>
     </div>
     <div class="settings-section">
@@ -275,16 +507,23 @@ tr:hover td{background:#fafafa}
     <h2 id="modalTitle">เพิ่มงานใหม่</h2>
     <div class="form-row">
       <label>ชื่อรายการงาน *</label>
-      <input type="text" id="fName" placeholder="ชื่องาน">
+      <input type="text" id="fName" list="taskNamesDatalist" placeholder="ชื่องาน">
+      <datalist id="taskNamesDatalist"></datalist>
     </div>
     <div class="form-2col">
       <div class="form-row">
         <label>หมวดหมู่</label>
-        <select id="fCat"></select>
+        <div style="display:flex; gap:6px">
+          <select id="fCat" style="flex:1"></select>
+          <button type="button" class="btn btn-ghost btn-sm" onclick="quickAddCategory()" style="padding:0 10px; font-size:16px; border-radius:8px" title="เพิ่มหมวดหมู่ด่วน">+</button>
+        </div>
       </div>
       <div class="form-row">
         <label>ผู้สั่งงาน</label>
-        <select id="fAssigner"></select>
+        <div style="display:flex; gap:6px">
+          <select id="fAssigner" style="flex:1"></select>
+          <button type="button" class="btn btn-ghost btn-sm" onclick="quickAddAssigner()" style="padding:0 10px; font-size:16px; border-radius:8px" title="เพิ่มผู้สั่งงานด่วน">+</button>
+        </div>
       </div>
     </div>
     <div class="form-2col">
@@ -328,9 +567,12 @@ tr:hover td{background:#fafafa}
       </div>
       <div class="attach-preview" id="attachPreview"></div>
     </div>
-    <div class="form-row">
-      <label>ลิงก์ไฟล์งาน</label>
-      <input type="text" id="fLink" placeholder="https://...">
+    <div class="form-row" style="border-top:1px solid #eee;padding-top:10px;margin-top:10px">
+      <label style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <span>🔗 ลิงก์งาน / โซเชียลมีเดีย (ระบุได้หลายลิงก์)</span>
+        <button type="button" class="btn btn-sm btn-ghost" onclick="addModalLink()" style="padding:2px 8px;font-size:11px">+ เพิ่มลิงก์</button>
+      </label>
+      <div id="formLinksList"></div>
     </div>
     <div class="form-row">
       <label>หมายเหตุ</label>
@@ -351,16 +593,40 @@ tr:hover td{background:#fafafa}
 
 <!-- PDF MODAL -->
 <div class="modal-bg" id="pdfModal">
-  <div class="modal" style="max-width:380px">
+  <div class="modal" style="max-width:420px">
     <h2>🖨️ เลือกหน้าที่จะ Print PDF</h2>
-    <div>
-      <label class="pdf-option" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f0f0f0;cursor:pointer"><input type="checkbox" id="pdfDash" checked style="width:18px;height:18px;accent-color:var(--purple)"> Dashboard สรุปภาพรวม</label>
-      <label class="pdf-option" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f0f0f0;cursor:pointer"><input type="checkbox" id="pdfTasks" checked style="width:18px;height:18px;accent-color:var(--purple)"> รายการงานทั้งหมด</label>
-      <label class="pdf-option" style="display:flex;align-items:center;gap:10px;padding:10px 0 0;cursor:pointer;padding-left:28px"><input type="checkbox" id="pdfIgnoreFilter" checked style="width:18px;height:18px;accent-color:var(--purple)"> <span style="font-size:13px;color:#666">แสดงทั้งหมด (ไม่ใช้ตัวกรองที่ค้างไว้)</span></label>
-      <label class="pdf-option" style="display:flex;align-items:center;gap:10px;padding:6px 0 10px;cursor:pointer;padding-left:28px"><input type="checkbox" id="pdfFullNote" style="width:18px;height:18px;accent-color:var(--purple)"> <span style="font-size:13px;color:#666">รวมหมายเหตุแบบเต็ม (เพิ่มหน้าท้ายเอกสาร)</span></label>
-      <label class="pdf-option" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid #f0f0f0;cursor:pointer"><input type="checkbox" id="pdfHistory" style="width:18px;height:18px;accent-color:var(--purple)"> History รายเดือน</label>
+    <div style="display:flex; flex-direction:column; gap:8px">
+      <label class="pdf-option" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f0;cursor:pointer"><input type="checkbox" id="pdfDash" checked style="width:18px;height:18px;accent-color:var(--purple)"> Dashboard สรุปภาพรวม</label>
+      <label class="pdf-option" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f0;cursor:pointer"><input type="checkbox" id="pdfTasks" checked style="width:18px;height:18px;accent-color:var(--purple)"> รายการงานทั้งหมด</label>
+      <label class="pdf-option" style="display:flex;align-items:center;gap:10px;padding:4px 0 4px;cursor:pointer;padding-left:28px"><input type="checkbox" id="pdfFullNote" style="width:18px;height:18px;accent-color:var(--purple)"> <span style="font-size:13px;color:#666">รวมหมายเหตุแบบเต็ม (เพิ่มหน้าท้ายเอกสาร)</span></label>
+      <label class="pdf-option" style="display:flex;align-items:center;gap:10px;padding:4px 0 4px;cursor:pointer;padding-left:28px"><input type="checkbox" id="pdfShowUpdates" style="width:18px;height:18px;accent-color:var(--purple)"> <span style="font-size:13px;color:#666">รวมประวัติบันทึกอัปเดตงานรายวัน (แสดงใต้ชื่องาน)</span></label>
+      <label class="pdf-option" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid #f0f0f0;cursor:pointer"><input type="checkbox" id="pdfHistory" style="width:18px;height:18px;accent-color:var(--purple)"> History รายเดือน</label>
+      
+      <div style="margin-top:10px; padding:12px; background:#f9f9ff; border:1px solid var(--purple-light); border-radius:8px">
+        <h4 style="font-size:13px; color:var(--purple-dark); margin-bottom:8px">🎯 ตัวกรองสำหรับการพิมพ์</h4>
+        <div class="form-row" style="margin-bottom:10px">
+          <label style="font-size:11px; font-weight:600; color:var(--gray3)">ประเภทงานที่ต้องการพิมพ์</label>
+          <select id="pdfTaskType" style="width:100%; padding:6px; font-size:13px; border:1px solid var(--gray2); border-radius:6px; outline:none; background:#fff">
+            <option value="active">เฉพาะงานที่ยังไม่เสร็จ (Active)</option>
+            <option value="completed">เฉพาะงานที่เสร็จสิ้นแล้ว (Completed)</option>
+            <option value="all">งานทั้งหมด (ทั้งเสร็จและไม่เสร็จ)</option>
+          </select>
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:8px;font-size:13px"><input type="checkbox" id="pdfUseScreenFilters" checked onchange="togglePdfFilters()" style="width:16px;height:16px;accent-color:var(--purple)"> พิมพ์ตามตัวกรองหลักจากหน้าจอ</label>
+        
+        <div id="pdfCustomFiltersSection" style="display:none; flex-direction:column; gap:8px; margin-top:8px">
+          <div class="form-row" style="margin-bottom:0">
+            <label style="font-size:11px; font-weight:600; color:var(--gray3)">เลือกหมวดหมู่ที่พิมพ์</label>
+            <select id="pdfFilterCat" style="width:100%; padding:6px; font-size:13px; border:1px solid var(--gray2); border-radius:6px; outline:none"></select>
+          </div>
+          <div class="form-row" style="margin-bottom:0">
+            <label style="font-size:11px; font-weight:600; color:var(--gray3)">เลือกผู้สั่งงานที่พิมพ์</label>
+            <select id="pdfFilterAssigner" style="width:100%; padding:6px; font-size:13px; border:1px solid var(--gray2); border-radius:6px; outline:none"></select>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="modal-btns">
+    <div class="modal-btns" style="margin-top:16px">
       <button class="btn btn-ghost" onclick="document.getElementById('pdfModal').classList.remove('open')">ยกเลิก</button>
       <button class="btn btn-primary" onclick="doPrint()">พิมพ์ / บันทึก PDF</button>
     </div>
@@ -397,6 +663,8 @@ let assigners=JSON.parse(localStorage.getItem('mb_assigners')||'["บอสบ�
 let editId=null;
 let currentImageData=null;
 let sortCol='index', sortDir=1;
+let activePage='dashboard';
+let filterUrgentOnly=false;
 
 function save(){
   localStorage.setItem('mb_tasks',JSON.stringify(tasks));
@@ -423,6 +691,7 @@ function playAlertSound(){
 
 // ============ NOTIFICATION ============
 let notiSoundPlayed=false;
+let isNotiDismissed=sessionStorage.getItem('mb_noti_dismissed')==='true';
 function checkNotifications(){
   const today=new Date(); today.setHours(0,0,0,0);
   const urgent=tasks.filter(t=>{
@@ -438,23 +707,61 @@ function checkNotifications(){
   document.getElementById('notiList').innerHTML=urgent.map(t=>{
     const d=new Date(t.deadline); d.setHours(0,0,0,0);
     const diff=Math.round((d-today)/86400000);
-    const label=diff<0?`เลยกำหนด ${Math.abs(diff)} วัน`:diff===0?'ครบกำหนดวันนี้':`อีก ${diff} วัน`;
+    const label=diff<0?`<span style="color:#ffcfc9;font-weight:700">เลยกำหนด ${Math.abs(diff)} วัน</span>`:diff===0?'ครบกำหนดวันนี้':`อีก ${diff} วัน`;
     return `• <strong>${t.name}</strong> — ${label} (${t.deadline})`;
   }).join('<br>');
-  bar.style.display='block';
-  if(!notiSoundPlayed){notiSoundPlayed=true; playAlertSound();}
+  
+  if(isNotiDismissed){
+    bar.style.display='none';
+  }else{
+    bar.style.display='block';
+    if(!notiSoundPlayed){notiSoundPlayed=true; playAlertSound();}
+  }
 }
 
 // ============ NAV ============
 function showPage(p,btn){
+  activePage=p;
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
   if(btn) btn.classList.add('active');
   if(p==='dashboard') renderDashboard();
   if(p==='tasks'){renderTasks();populateFilters();}
+  if(p==='completed'){renderCompletedTasks();populateCompletedFilters();}
   if(p==='history') renderHistory();
   if(p==='settings') renderSettings();
+}
+
+function clickStat(type){
+  const navBtns=document.querySelectorAll('nav .nav-btn');
+  let targetBtn=null;
+  if(type==='completed'){
+    navBtns.forEach(btn=>{
+      const oc=btn.getAttribute('onclick')||'';
+      if(oc.includes('completed')) targetBtn=btn;
+    });
+    if(targetBtn) showPage('completed',targetBtn);
+  } else {
+    navBtns.forEach(btn=>{
+      const oc=btn.getAttribute('onclick')||'';
+      if(oc.includes('tasks')) targetBtn=btn;
+    });
+    if(targetBtn){
+      showPage('tasks',targetBtn);
+      if(type==='total'){
+        clearFilters();
+      } else if(type==='inprog'){
+        clearFilters();
+        document.getElementById('filterStatus').value='กำลังทำ';
+        renderTasks();
+      } else if(type==='urgent'){
+        clearFilters();
+        filterUrgentOnly=true;
+        renderTasks();
+      }
+    }
+  }
 }
 
 // ============ DASHBOARD ============
@@ -472,12 +779,22 @@ function renderDashboard(){
   const pct=total>0?Math.round(done/total*100):0;
 
   document.getElementById('statsGrid').innerHTML=`
-    <div class="stat"><div class="num">${total}</div><div class="lbl">งานทั้งหมด</div></div>
-    <div class="stat green"><div class="num">${done}</div><div class="lbl">เสร็จแล้ว</div></div>
-    <div class="stat orange"><div class="num">${inprog}</div><div class="lbl">กำลังทำ</div></div>
-    <div class="stat red"><div class="num">${urgent}</div><div class="lbl">ใกล้/เลยกำหนด</div></div>
-    <div class="stat"><div class="num">${pct}%</div><div class="lbl">สำเร็จ</div>
-      <div class="progress-wrap"><div class="progress-bar" style="width:${pct}%"></div></div></div>`;
+    <div class="stat" onclick="clickStat('total')" style="cursor:pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.transform='none'; this.style.boxShadow='0 1px 4px rgba(0,0,0,0.07)'">
+      <div class="num">${total}</div><div class="lbl">งานทั้งหมด</div>
+    </div>
+    <div class="stat green" onclick="clickStat('completed')" style="cursor:pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.transform='none'; this.style.boxShadow='0 1px 4px rgba(0,0,0,0.07)'">
+      <div class="num">${done}</div><div class="lbl">เสร็จแล้ว</div>
+    </div>
+    <div class="stat orange" onclick="clickStat('inprog')" style="cursor:pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.transform='none'; this.style.boxShadow='0 1px 4px rgba(0,0,0,0.07)'">
+      <div class="num">${inprog}</div><div class="lbl">กำลังทำ</div>
+    </div>
+    <div class="stat red" onclick="clickStat('urgent')" style="cursor:pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.transform='none'; this.style.boxShadow='0 1px 4px rgba(0,0,0,0.07)'">
+      <div class="num">${urgent}</div><div class="lbl">ใกล้/เลยกำหนด</div>
+    </div>
+    <div class="stat">
+      <div class="num">${pct}%</div><div class="lbl">สำเร็จ</div>
+      <div class="progress-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>
+    </div>`;
 
   const canvas=document.getElementById('dashChart');
   const ctx=canvas.getContext('2d');
@@ -528,8 +845,54 @@ function renderDashboard(){
       return `<tr><td><strong class="task-link" onclick="editTask('${t.id}')" title="คลิกเพื่อแก้ไขงานนี้">${t.name}</strong></td><td>${t.category||'-'}</td><td>${t.assigner||'-'}</td><td>${t.deadline||'-'}</td>
         <td><span style="color:${diff<0?'var(--red)':'var(--orange)'};font-weight:700">${diff<0?diff+'วัน':'อีก '+diff+' วัน'}</span></td></tr>`;
     }).join('')+'</tbody></table>';
+
+  // สรุปงานตามผู้สั่งงาน
+  const aStats={};
+  tasks.forEach(t=>{
+    const a=t.assigner||'ไม่ระบุ';
+    if(!aStats[a]) aStats[a]={total:0,done:0};
+    aStats[a].total++;
+    if(t.status==='เสร็จสิ้น') aStats[a].done++;
+  });
+  const aRows=Object.keys(aStats).sort().map(a=>{
+    const total=aStats[a].total;
+    const done=aStats[a].done;
+    const pending=total-done;
+    const pct=total>0?Math.round((done/total)*100):0;
+    return `<tr>
+      <td><strong>${a}</strong></td>
+      <td style="text-align:center">${total}</td>
+      <td style="text-align:center;color:var(--green);font-weight:700">${done}</td>
+      <td style="text-align:center;color:${pending>0?'var(--orange)':'#555'};font-weight:700">${pending}</td>
+      <td style="text-align:center">
+        <div style="display:flex;align-items:center;justify-content:center;gap:6px">
+          <div class="mini-bar" style="width:60px;margin:0"><div class="mini-bar-fill" style="width:${pct}%;background:var(--green)"></div></div>
+          <span style="font-size:11px;color:#555;font-weight:600">${pct}%</span>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+  
+  const assignerTableHtml=`
+    <table style="width:100%">
+      <thead>
+        <tr>
+          <th>ผู้สั่งงาน</th>
+          <th style="text-align:center;width:100px">งานทั้งหมด</th>
+          <th style="text-align:center;width:100px">เสร็จสิ้น</th>
+          <th style="text-align:center;width:100px">คงค้าง</th>
+          <th style="text-align:center;width:130px">อัตราสำเร็จ</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${aRows.length ? aRows : '<tr><td colspan="5" style="text-align:center;color:#aaa">ยังไม่มีข้อมูลผู้สั่งงาน</td></tr>'}
+      </tbody>
+    </table>
+  `;
+  document.getElementById('dashAssignerTable').innerHTML=assignerTableHtml;
 }
 
+// ============ SORT ============
 // ============ SORT ============
 function sortBy(col){
   if(sortCol===col) sortDir*=-1;
@@ -558,8 +921,45 @@ function applySort(list){
   return list;
 }
 
-// ============ TASKS ============
+function sortFromDropdown(val){
+  sortCol=val;
+  if(val==='percent'||val==='priority'){
+    sortDir=-1;
+  } else {
+    sortDir=1;
+  }
+  renderTasks();
+}
+
+function sortCompletedFromDropdown(val){
+  compSortCol=val;
+  if(val==='completedAt'||val==='priority'){
+    compSortDir=-1;
+  } else {
+    compSortDir=1;
+  }
+  renderCompletedTasks();
+}
+
 function renderTasks(){
+  // Load column visibility preferences
+  if(localStorage.getItem('mb_col_file')===null){
+    document.getElementById('colShowFile').checked=false;
+  }else{
+    document.getElementById('colShowFile').checked=localStorage.getItem('mb_col_file')==='true';
+  }
+  if(localStorage.getItem('mb_col_note')===null){
+    document.getElementById('colShowNote').checked=false;
+  }else{
+    document.getElementById('colShowNote').checked=localStorage.getItem('mb_col_note')==='true';
+  }
+
+  const showFile=document.getElementById('colShowFile').checked;
+  const showNote=document.getElementById('colShowNote').checked;
+
+  localStorage.setItem('mb_col_file', showFile);
+  localStorage.setItem('mb_col_note', showNote);
+
   populateFilters();
   const search=document.getElementById('searchInput').value.toLowerCase();
   const cat=document.getElementById('filterCat').value;
@@ -568,13 +968,35 @@ function renderTasks(){
   const assigner=document.getElementById('filterAssigner').value;
 
   let filtered=tasks.filter(t=>{
-    if(search&&!t.name.toLowerCase().includes(search)) return false;
+    if(search){
+      const hasMatch=t.name.toLowerCase().includes(search)||
+                       (t.note&&t.note.toLowerCase().includes(search))||
+                       (t.updates&&t.updates.some(u=>u.text&&u.text.toLowerCase().includes(search)));
+      if(!hasMatch) return false;
+    }
     if(cat&&t.category!==cat) return false;
-    if(status&&t.status!==status) return false;
+    
+    // Status filter logic
+    if(status==='active'){
+      if(t.status==='เสร็จสิ้น') return false;
+    } else if(status!=='all' && status!==''){
+      if(t.status!==status) return false;
+    }
+    
     if(priority&&t.priority!==priority) return false;
     if(assigner&&t.assigner!==assigner) return false;
     return true;
   });
+
+  // Handle clickable dashboard overdue shortcut
+  if (filterUrgentOnly) {
+    const today = new Date(); today.setHours(0,0,0,0);
+    filtered = filtered.filter(t => {
+      if (t.status === 'เสร็จสิ้น' || !t.deadline) return false;
+      const d = new Date(t.deadline); d.setHours(0,0,0,0);
+      return Math.round((d - today) / 86400000) <= 3;
+    });
+  }
 
   applySort(filtered);
 
@@ -583,58 +1005,200 @@ function renderTasks(){
   if(filtered.length===0){tbody.innerHTML='';empty.style.display='block';return;}
   empty.style.display='none';
 
-  const today=new Date(); today.setHours(0,0,0,0);
-  tbody.innerHTML=filtered.map((t,i)=>{
-    const statusCls={'เสร็จสิ้น':'done','กำลังทำ':'inprog','เริ่มต้น':'start','วางแผน':'plan','ยังไม่เริ่ม':'notyet'}[t.status]||'plan';
-    const priCls={'ด่วน':'urgent','สูง':'high','ปานกลาง':'mid','ต่ำ':'low'}[t.priority]||'mid';
-    let dayLeft='-';
-    if(t.deadline){
-      const d=new Date(t.deadline); d.setHours(0,0,0,0);
-      const diff=Math.round((d-today)/86400000);
-      const color=diff<0?'var(--red)':diff<=3?'var(--orange)':'#555';
-      dayLeft=`<span style="color:${color};font-weight:${diff<=3?700:400}">${diff}</span>`;
+  // Group by active/activity dates to prevent yesterday's work from disappearing
+  const todayDate = new Date(); todayDate.setHours(0,0,0,0);
+  const todayStr = getLocalDateStr(todayDate);
+  const yesterdayDate = new Date(); yesterdayDate.setDate(todayDate.getDate() - 1);
+  const yesterdayStr = getLocalDateStr(yesterdayDate);
+
+  const records = [];
+  filtered.forEach(t => {
+    const activeDates = new Set();
+    
+    // 1. Creation Date
+    const ts = parseInt(t.id);
+    if (!isNaN(ts) && ts > 1500000000000) {
+      activeDates.add(getLocalDateStr(new Date(ts)));
+    } else if (t.startDate) {
+      activeDates.add(getLocalDateStr(new Date(t.startDate)));
+    } else {
+      activeDates.add(todayStr);
     }
-    const pct=t.percent||0;
-    const barColor=pct>=100?'#11734b':pct>=60?'#8989eb':'#f46524';
+    
+    // 2. Daily updates dates
+    if (t.updates && t.updates.length > 0) {
+      t.updates.forEach(u => {
+        if (u.date) {
+          activeDates.add(getLocalDateStr(new Date(u.date)));
+        }
+      });
+    }
+    
+    // 3. Completed date
+    if (t.status === 'เสร็จสิ้น' && t.completedAt) {
+      let compDate = null;
+      if (t.completedAt.includes('/')) {
+        const parts = t.completedAt.split('/');
+        if (parts.length === 3) {
+          const year = parseInt(parts[2]) > 2500 ? parseInt(parts[2]) - 543 : parseInt(parts[2]);
+          compDate = new Date(year, parseInt(parts[1]) - 1, parseInt(parts[0]));
+        }
+      } else {
+        compDate = new Date(t.completedAt);
+      }
+      if (compDate && !isNaN(compDate.getTime())) {
+        activeDates.add(getLocalDateStr(compDate));
+      }
+    }
+    
+    activeDates.forEach(dateKey => {
+      // Find update text for this specific day
+      let updateTextForThisDay = '';
+      if (t.updates && t.updates.length > 0) {
+        const dayUpdates = t.updates.filter(u => getLocalDateStr(new Date(u.date)) === dateKey);
+        if (dayUpdates.length > 0) {
+          updateTextForThisDay = dayUpdates.map(u => u.text).join('\n');
+        }
+      }
+      
+      records.push({
+        task: t,
+        dateKey: dateKey,
+        updateText: updateTextForThisDay
+      });
+    });
+  });
 
-    // file/image cell
-    let fileCell='';
-    if(t.imageData) fileCell+=`<img class="img-thumb" src="${t.imageData}" onclick="viewImg('${t.id}')" title="ดูรูป"> `;
-    if(t.fileName) fileCell+=`<span style="font-size:11px;background:#f0f0f0;padding:2px 6px;border-radius:4px;color:#555">📄 ${t.fileName}</span>`;
-    if(t.link) fileCell+=` <a href="${t.link}" target="_blank" style="font-size:11px;color:var(--purple)">🔗</a>`;
-    if(!fileCell) fileCell='-';
+  // Group records by dateKey
+  const grouped = {};
+  records.forEach(r => {
+    if (!grouped[r.dateKey]) {
+      grouped[r.dateKey] = [];
+    }
+    grouped[r.dateKey].push(r);
+  });
 
-    const completedAt=t.completedAt?`<span style="font-size:12px;color:var(--green)">${t.completedAt}</span>`:'-';
-    const updCount=(t.updates||[]).length;
+  // Sort dates descending (newest first)
+  const sortedKeys = Object.keys(grouped).sort().reverse();
 
-    return `<tr>
-      <td class="sticky-col" style="white-space:nowrap">
-        <button class="btn btn-sm btn-ghost" onclick="editTask('${t.id}')">✏️</button>
-        <button class="btn btn-sm btn-danger" onclick="deleteTask('${t.id}')">🗑</button>
-      </td>
-      <td style="color:#888">${i+1}</td>
-      <td><strong class="task-link" onclick="editTask('${t.id}')" title="คลิกเพื่อแก้ไขงานนี้">${t.name}</strong></td>
-      <td><span class="badge" style="background:var(--purple-light);color:var(--purple-dark)">${t.category||'-'}</span></td>
-      <td><span class="badge ${statusCls}">${t.status||'-'}</span></td>
-      <td><span class="badge ${priCls}">${t.priority||'-'}</span></td>
-      <td style="white-space:nowrap;color:#888">${t.startDate||'-'}</td>
-      <td style="white-space:nowrap;color:#888">${t.deadline||'-'}</td>
-      <td style="text-align:center">${dayLeft}</td>
-      <td>
-        <div style="display:flex;align-items:center;gap:6px">
-          <div class="mini-bar"><div class="mini-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
-          <span style="font-size:12px;color:#555">${pct}%</span>
+  let html = '';
+  sortedKeys.forEach(dateKey => {
+    const groupRecords = grouped[dateKey];
+    
+    // Friendly label for the date group
+    const d = new Date(dateKey);
+    let friendlyDate = `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear() + 543}`;
+    if (dateKey === todayStr) {
+      friendlyDate = `วันนี้ ( ${friendlyDate} )`;
+    } else if (dateKey === yesterdayStr) {
+      friendlyDate = `เมื่อวานนี้ ( ${friendlyDate} )`;
+    }
+
+    html += `
+      <div class="date-group">
+        <div class="date-group-header">
+          <span>📅 ${friendlyDate}</span>
+          <span class="count-badge">${groupRecords.length} งาน</span>
         </div>
-      </td>
-      <td>${t.assigner||'-'}</td>
-      <td style="white-space:nowrap">${fileCell}</td>
-      <td style="white-space:nowrap">${completedAt}</td>
-      <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#888" title="${t.note||''}">${t.note||'-'}</td>
-      <td style="white-space:nowrap;text-align:center">
-        <button class="btn btn-sm btn-ghost" onclick="openUpdateModal('${t.id}')" title="ดู/เพิ่มอัพเดท">📝${updCount?' ('+updCount+')':''}</button>
-      </td>
-    </tr>`;
-  }).join('');
+        <div class="task-cards-list">
+    `;
+
+    groupRecords.forEach(r => {
+      const t = r.task;
+      const isCompleted = t.status === 'เสร็จสิ้น';
+      const statusCls = { 'เสร็จสิ้น': 'done', 'กำลังทำ': 'inprog', 'เริ่มต้น': 'start', 'วางแผน': 'plan', 'ยังไม่เริ่ม': 'notyet' }[t.status] || 'plan';
+      const priCls = { 'ด่วน': 'urgent', 'สูง': 'high', 'ปานกลาง': 'mid', 'ต่ำ': 'low' }[t.priority] || 'mid';
+      
+      let dayLeft = '-';
+      let dayLeftColor = '';
+      if (t.deadline && !isCompleted) {
+        const dDeadline = new Date(t.deadline); dDeadline.setHours(0,0,0,0);
+        const diff = Math.round((dDeadline - todayDate) / 86400000);
+        dayLeft = diff;
+        dayLeftColor = diff < 0 ? 'color:var(--red);font-weight:700' : diff <= 3 ? 'color:var(--orange);font-weight:700' : '';
+      }
+
+      const pct = t.percent || 0;
+      const barColor = pct >= 100 ? '#11734b' : pct >= 60 ? '#8989eb' : '#f46524';
+
+      // Attachments (files / images / links)
+      let fileCell = '';
+      if (showFile) {
+        if (t.imageData) {
+          fileCell += `<img class="img-thumb" src="${t.imageData}" onclick="viewImg('${t.id}')" title="ดูรูป" style="max-height:30px;border-radius:4px;cursor:pointer;vertical-align:middle;margin-right:6px"> `;
+        }
+        if (t.fileName) {
+          fileCell += `<span style="font-size:11px;background:#f0f0f0;padding:2px 6px;border-radius:4px;color:#555" title="${t.fileName}">📄 ${t.fileName.length > 10 ? t.fileName.slice(0,8) + '…' : t.fileName}</span>`;
+        }
+        const lnks = t.links || (t.link ? [ { label: 'ลิงก์', url: t.link } ] : []);
+        lnks.forEach(lnk => {
+          if (lnk.url) {
+            const label = lnk.label || 'ลิงก์';
+            fileCell += ` <a href="${lnk.url}" target="_blank" style="display:inline-block;font-size:10px;background:#eef2ff;color:var(--purple-dark);padding:1px 5px;border-radius:4px;border:1px solid var(--purple-light);text-decoration:none;margin-top:2px" title="${lnk.url}">🔗 ${label}</a>`;
+          }
+        });
+      }
+
+      let noteCell = '';
+      if (showNote && t.note) {
+        noteCell = `<div style="font-size:12px;color:#888;margin-top:4px;border-top:1px dashed #eee;padding-top:4px">📝 <i>หมายเหตุ:</i> ${t.note}</div>`;
+      }
+
+      // Check if task is completed
+      const cardClass = isCompleted ? 'task-card completed' : 'task-card';
+      const pStripClass = `priority-strip ${priCls}`;
+
+      // Update text bubble
+      const updateBubble = r.updateText ? `<div class="latest-update">📝 ${renderCollapsibleText(r.updateText, 150, t.id + '-' + r.dateKey)}</div>` : '';
+
+      html += `
+        <div class="${cardClass}">
+          <div class="${pStripClass}"></div>
+          <div class="card-content-wrap">
+            <div class="task-details">
+              <div class="title-row">
+                <span class="task-title" onclick="editTask('${t.id}')">${t.name}</span>
+                <span class="badge ${statusCls}">${t.status || '-'}</span>
+                ${t.category ? `<span class="badge" style="background:var(--purple-light);color:var(--purple-dark);font-size:10px;padding:1px 6px">${t.category}</span>` : ''}
+              </div>
+              
+              ${updateBubble}
+              ${noteCell}
+              
+              <div class="meta-row">
+                ${t.assigner ? `<span class="meta-item">👤 ${t.assigner}</span>` : ''}
+                <span class="meta-item">📅 เริ่ม: ${t.startDate || '-'} | ส่ง: ${t.deadline || '-'}</span>
+                ${t.deadline && !isCompleted ? `<span class="meta-item" style="${dayLeftColor}">เหลือ ${dayLeft} วัน</span>` : ''}
+                ${isCompleted ? `<span class="meta-item" style="color:var(--green)">เสร็จเมื่อ: ${formatCompletedDate(t.completedAt)}</span>` : ''}
+                ${fileCell ? `<span class="meta-item">${fileCell}</span>` : ''}
+              </div>
+            </div>
+            
+            <div class="card-right">
+              <div class="progress-section">
+                <div class="mini-bar-outer">
+                  <div class="mini-bar-inner" style="width: ${pct}%; background: ${barColor}"></div>
+                </div>
+                <span class="pct-text">${pct}%</span>
+              </div>
+              <div class="action-buttons">
+                <button class="action-btn" onclick="editTask('${t.id}')" title="แก้ไข">✏️</button>
+                <button class="action-btn" onclick="duplicateTask('${t.id}')" title="คัดลอกงาน">📋</button>
+                <button class="action-btn delete" onclick="deleteTask('${t.id}')" title="ลบ">🗑</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+
+    html += `
+        </div>
+      </div>
+    `;
+  });
+
+  tbody.innerHTML = html;
 }
 
 function viewImg(id){
@@ -651,16 +1215,250 @@ function populateFilters(){
   catEl.innerHTML='<option value="">ทุกหมวดหมู่</option>'+categories.map(c=>`<option>${c}</option>`).join('');
   asgEl.innerHTML='<option value="">ทุกผู้สั่งงาน</option>'+assigners.map(a=>`<option>${a}</option>`).join('');
   catEl.value=curCat; asgEl.value=curAsg;
+  
+  if (typeof populateCompletedFilters === 'function') {
+    populateCompletedFilters();
+  }
 }
 
 function clearFilters(){
   document.getElementById('searchInput').value='';
-  ['filterCat','filterStatus','filterPriority','filterAssigner'].forEach(id=>document.getElementById(id).value='');
+  ['filterCat','filterPriority','filterAssigner'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('filterStatus').value='all';
+  filterUrgentOnly=false;
   renderTasks();
 }
 
 // ============ HISTORY ============
+let currentHistoryTab='completed';
+function changeHistoryTab(tab){
+  currentHistoryTab=tab;
+  const btnComp=document.getElementById('btnHistCompleted');
+  const btnUpd=document.getElementById('btnHistUpdates');
+  if(tab==='completed'){
+    if(btnComp) btnComp.className='btn btn-sm btn-primary';
+    if(btnUpd) btnUpd.className='btn btn-sm btn-ghost';
+  }else{
+    if(btnComp) btnComp.className='btn btn-sm btn-ghost';
+    if(btnUpd) btnUpd.className='btn btn-sm btn-primary';
+  }
+  renderHistory();
+}
+function renderHistoryUpdates(){
+  const el=document.getElementById('historyContent');
+  if(!el) return;
+  const allActivities=[];
+  
+  tasks.forEach(t=>{
+    // 1. Task Creation Activity
+    const createTime = parseInt(t.id);
+    if (!isNaN(createTime) && createTime > 1500000000000) {
+      allActivities.push({
+        taskId: t.id,
+        taskName: t.name,
+        taskStatus: t.status,
+        date: new Date(createTime),
+        badgeText: '➕ สร้างงานใหม่',
+        badgeStyle: 'background:#eef2ff;color:#4338ca;border:1px solid #c7d2fe',
+        dotColor: '#4338ca',
+        text: `สร้างรายการงานใหม่: "${t.name}"${t.category ? ` (หมวด: ${t.category})` : ''}${t.assigner ? ` [ผู้สั่ง: ${t.assigner}]` : ''}`
+      });
+    }
+
+    // 2. Daily Updates / Notes Activities
+    if (t.updates && t.updates.length) {
+      t.updates.forEach(u => {
+        allActivities.push({
+          taskId: t.id,
+          taskName: t.name,
+          taskStatus: t.status,
+          date: new Date(u.date),
+          badgeText: '📝 บันทึกอัปเดต',
+          badgeStyle: 'background:var(--purple-light);color:var(--purple-dark);border:1px solid #c5c5f0',
+          dotColor: 'var(--purple)',
+          text: u.text
+        });
+      });
+    }
+
+    // 3. Task Completion Activity
+    if (t.status === 'เสร็จสิ้น' && t.completedAt) {
+      let compDate = null;
+      if (t.completedAt.includes('/')) {
+        const parts = t.completedAt.split('/');
+        if (parts.length === 3) {
+          const year = parseInt(parts[2]) > 2500 ? parseInt(parts[2]) - 543 : parseInt(parts[2]);
+          compDate = new Date(year, parseInt(parts[1]) - 1, parseInt(parts[0]), 17, 0, 0);
+        }
+      } else {
+        compDate = new Date(t.completedAt);
+      }
+      
+      // If updatedAt is on the same day, use the precise time
+      if (t.updatedAt) {
+        const upDate = new Date(t.updatedAt);
+        if (compDate && upDate.getFullYear() === compDate.getFullYear() &&
+            upDate.getMonth() === compDate.getMonth() &&
+            upDate.getDate() === compDate.getDate()) {
+          compDate = upDate;
+        }
+      }
+
+      if (compDate && !isNaN(compDate.getTime())) {
+        allActivities.push({
+          taskId: t.id,
+          taskName: t.name,
+          taskStatus: 'เสร็จสิ้น',
+          date: compDate,
+          badgeText: '✅ ทำเสร็จสิ้น',
+          badgeStyle: 'background:#d4edbc;color:#11734b;border:1px solid #a3d977',
+          dotColor: '#11734b',
+          text: `ทำเสร็จสิ้นสมบูรณ์ 100% 🎉`
+        });
+      }
+    }
+
+    // 4. Task Last Modified Activity (if modified later than creation)
+    if (t.updatedAt) {
+      const modTime = new Date(t.updatedAt).getTime();
+      if (!isNaN(modTime) && (!isNaN(createTime) && (modTime - createTime > 120000))) {
+        allActivities.push({
+          taskId: t.id,
+          taskName: t.name,
+          taskStatus: t.status,
+          date: new Date(modTime),
+          badgeText: '⚙️ อัปเดตงาน',
+          badgeStyle: 'background:#ffe6dd;color:#f46524;border:1px solid #ffbdad',
+          dotColor: '#f46524',
+          text: `ปรับปรุงข้อมูลรายการงาน (สถานะ: ${t.status}, ความคืบหน้า: ${t.percent||0}%)`
+        });
+      }
+    }
+  });
+
+  // Smart Consolidation by Task and Calendar Date
+  const taskGroups = {};
+  allActivities.forEach(act => {
+    if (!taskGroups[act.taskId]) taskGroups[act.taskId] = [];
+    taskGroups[act.taskId].push(act);
+  });
+
+  const consolidatedActivities = [];
+  Object.keys(taskGroups).forEach(taskId => {
+    const acts = taskGroups[taskId];
+    const dateGroups = {};
+    acts.forEach(act => {
+      const y = act.date.getFullYear();
+      const m = String(act.date.getMonth() + 1).padStart(2, '0');
+      const d = String(act.date.getDate()).padStart(2, '0');
+      const dateKey = `${y}-${m}-${d}`;
+      if (!dateGroups[dateKey]) dateGroups[dateKey] = [];
+      dateGroups[dateKey].push(act);
+    });
+
+    Object.keys(dateGroups).forEach(dateKey => {
+      const dayActs = dateGroups[dateKey];
+      const hasCreated = dayActs.some(a => a.badgeText === '➕ สร้างงานใหม่');
+      const hasCompleted = dayActs.some(a => a.badgeText === '✅ ทำเสร็จสิ้น');
+      const hasModified = dayActs.some(a => a.badgeText === '⚙️ อัปเดตงาน');
+      const notes = dayActs.filter(a => a.badgeText === '📝 บันทึกอัปเดต');
+
+      if (hasCreated && hasCompleted) {
+        const compAct = dayActs.find(a => a.badgeText === '✅ ทำเสร็จสิ้น');
+        const createAct = dayActs.find(a => a.badgeText === '➕ สร้างงานใหม่');
+        const bestDate = compAct.date.getTime() > createAct.date.getTime() ? compAct.date : createAct.date;
+        
+        consolidatedActivities.push({
+          taskId: compAct.taskId,
+          taskName: compAct.taskName,
+          taskStatus: 'เสร็จสิ้น',
+          date: bestDate,
+          badgeText: '✅ เสร็จสิ้น',
+          badgeStyle: 'background:#d4edbc;color:#11734b;border:1px solid #a3d977',
+          dotColor: '#11734b',
+          text: `สร้างงานใหม่และดำเนินงานเสร็จสิ้น 100% 🎉`
+        });
+      } else {
+        if (hasCompleted) {
+          const compAct = dayActs.find(a => a.badgeText === '✅ ทำเสร็จสิ้น');
+          consolidatedActivities.push(compAct);
+        } else if (hasCreated) {
+          const createAct = dayActs.find(a => a.badgeText === '➕ สร้างงานใหม่');
+          consolidatedActivities.push(createAct);
+        } else if (hasModified) {
+          const modAct = dayActs.find(a => a.badgeText === '⚙️ อัปเดตงาน');
+          consolidatedActivities.push(modAct);
+        }
+      }
+      notes.forEach(n => consolidatedActivities.push(n));
+    });
+  });
+
+  if(consolidatedActivities.length===0){
+    el.innerHTML='<div style="color:#aaa;text-align:center;padding:30px 0;font-size:14px">📭 ยังไม่มีประวัติกิจกรรมการทำงานรายวัน</div>';
+    return;
+  }
+
+  // Sort activities descending by date
+  consolidatedActivities.sort((a,b)=>b.date - a.date);
+
+  // Group by date string (YYYY-MM-DD)
+  const grouped={};
+  consolidatedActivities.forEach(item=>{
+    const y=item.date.getFullYear();
+    const m=String(item.date.getMonth()+1).padStart(2,'0');
+    const d=String(item.date.getDate()).padStart(2,'0');
+    const key=`${y}-${m}-${d}`;
+    const today=new Date();
+    const yesterday=new Date(); yesterday.setDate(today.getDate()-1);
+    let dayLabel=`${item.date.getDate()} ${MONTHS[item.date.getMonth()]} ${y+543}`;
+    if(key===getLocalDateStr(today)){
+      dayLabel=`วันนี้ ( ${dayLabel} )`;
+    }else if(key===getLocalDateStr(yesterday)){
+      dayLabel=`เมื่อวานนี้ ( ${dayLabel} )`;
+    }
+    if(!grouped[key]) grouped[key]={label:dayLabel,items:[]};
+    grouped[key].items.push(item);
+  });
+
+  const sortedKeys=Object.keys(grouped).sort().reverse();
+  const html=sortedKeys.map(key=>{
+    const group=grouped[key];
+    const itemsHtml=group.items.map((item, idx)=>{
+      const timeStr=item.date.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})+' น.';
+      const statusCls={'เสร็จสิ้น':'done','กำลังทำ':'inprog','เริ่มต้น':'start','วางแผน':'plan','ยังไม่เริ่ม':'notyet'}[item.taskStatus]||'plan';
+      const collapsibleId = `hist-${key}-${idx}`;
+      return `
+        <div style="display:flex;gap:12px;margin-bottom:14px;position:relative;padding-left:14px">
+          <div style="position:absolute;left:-4px;top:6px;width:10px;height:10px;border-radius:50%;background:${item.dotColor};border:2px solid #fff;box-shadow:0 0 0 2px rgba(0,0,0,0.08)"></div>
+          <div style="flex:1">
+            <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:12px;color:#888">
+              <span>⏰ ${timeStr}</span>
+              <span>•</span>
+              <strong class="task-link" style="color:var(--purple-dark);font-weight:600" onclick="editTask('${item.taskId}')" title="คลิกเพื่อเปิดดูงานนี้">${item.taskName}</strong>
+              <span class="badge ${statusCls}" style="font-size:10px;padding:1px 6px">${item.taskStatus}</span>
+              <span style="font-size:10px;padding:1px 6px;border-radius:10px;font-weight:600;${item.badgeStyle}">${item.badgeText}</span>
+            </div>
+            <div style="font-size:13.5px;color:#333;margin-top:4px;padding:8px 12px;background:#f9f9ff;border-radius:8px;border-left:3px solid ${item.dotColor};line-height:1.4">${renderCollapsibleText(item.text, 150, collapsibleId)}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+    return `
+      <div style="margin-bottom:24px;position:relative">
+        <h3 style="color:var(--purple-dark);font-size:14px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:6px">📅 ${group.label}</h3>
+        <div style="position:absolute;left:0;top:28px;bottom:0;width:2px;background:var(--purple-light)"></div>
+        <div style="padding-left:12px">${itemsHtml}</div>
+      </div>
+    `;
+  }).join('');
+  el.innerHTML=html;
+}
 function renderHistory(){
+  if(currentHistoryTab==='updates'){
+    renderHistoryUpdates();
+    return;
+  }
   const done=tasks.filter(t=>t.status==='เสร็จสิ้น').sort((a,b)=>new Date(b.deadline)-new Date(a.deadline));
   const el=document.getElementById('historyContent');
   if(done.length===0){el.innerHTML='<div class="empty"><span>📭</span>ยังไม่มีงานที่เสร็จสิ้น</div>';return;}
@@ -791,17 +1589,58 @@ function closeUpdateModal(){
   document.getElementById('updateModal').classList.remove('open');
   currentUpdateTaskId=null; editingUpdateId=null;
 }
+let currentModalLinks=[];
+function renderModalLinks(){
+  const container=document.getElementById('formLinksList');
+  if(!container) return;
+  if(currentModalLinks.length===0){
+    container.innerHTML='<div style="color:#aaa;font-size:12px;padding:4px 0">ยังไม่มีลิงก์เพิ่มเติม (กด + เพิ่มลิงก์ เพื่อเพิ่ม)</div>';
+    return;
+  }
+  container.innerHTML=currentModalLinks.map((item,idx)=>`
+    <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px">
+      <input type="text" placeholder="ชื่อเรียก (เช่น FB, IG)" value="${item.label||''}" oninput="updateModalLink(${idx}, 'label', this.value)" style="width:130px;padding:6px;font-size:12.5px;border:1px solid var(--gray2);border-radius:6px;outline:none;font-family:inherit">
+      <input type="text" placeholder="ลิงก์ https://..." value="${item.url||''}" oninput="updateModalLink(${idx}, 'url', this.value)" style="flex:1;padding:6px;font-size:12.5px;border:1px solid var(--gray2);border-radius:6px;outline:none;font-family:inherit">
+      <button type="button" class="btn btn-sm btn-danger" onclick="removeModalLink(${idx})" style="padding:0 10px;font-size:16px;border-radius:6px;height:30px;display:flex;align-items:center;justify-content:center">×</button>
+    </div>
+  `).join('');
+}
+function addModalLink(){
+  currentModalLinks.push({label:'',url:''});
+  renderModalLinks();
+}
+function updateModalLink(idx,field,val){
+  if(currentModalLinks[idx]){
+    currentModalLinks[idx][field]=val;
+  }
+}
+function removeModalLink(idx){
+  currentModalLinks.splice(idx,1);
+  renderModalLinks();
+}
+
+function updateDatalist(){
+  const dl=document.getElementById('taskNamesDatalist');
+  if(!dl) return;
+  const names=Array.from(new Set(tasks.map(t=>t.name).filter(Boolean)));
+  dl.innerHTML=names.map(name=>`<option value="${name}">`).join('');
+}
 function openAddModal(){
   editId=null; currentImageData=null;
+  currentModalLinks=[];
   document.getElementById('modalTitle').textContent='เพิ่มงานใหม่';
   clearForm();
+  updateDatalist();
+  renderModalLinks();
   document.getElementById('taskModal').classList.add('open');
 }
 function editTask(id){
   const t=tasks.find(x=>x.id===id); if(!t) return;
   editId=id; currentImageData=t.imageData||null;
+  currentModalLinks=t.links ? JSON.parse(JSON.stringify(t.links)) : (t.link ? [ { label: 'ลิงก์', url: t.link } ] : []);
   document.getElementById('modalTitle').textContent='แก้ไขงาน';
   populateModalDropdowns();
+  updateDatalist();
   document.getElementById('fName').value=t.name||'';
   document.getElementById('fCat').value=t.category||'';
   document.getElementById('fAssigner').value=t.assigner||'';
@@ -814,7 +1653,7 @@ function editTask(id){
   handleStatusChange();
   document.getElementById('fFileName').value=t.fileName||'';
   document.getElementById('fNote').value=t.note||'';
-  document.getElementById('fLink').value=t.link||'';
+  renderModalLinks();
   const prev=document.getElementById('attachPreview');
   prev.innerHTML=t.imageData?`<img src="${t.imageData}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:1px solid #ddd">`:'' ;
   editingUpdateId=null;
@@ -825,12 +1664,17 @@ function editTask(id){
 }
 function clearForm(){
   populateModalDropdowns();
-  ['fName','fStart','fDeadline','fNote','fLink','fFileName'].forEach(id=>document.getElementById(id).value='');
+  ['fName','fStart','fDeadline','fNote','fFileName'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.value='';
+  });
+  currentModalLinks=[];
   document.getElementById('fPct').value=0;
   document.getElementById('fPctLbl').textContent='0';
   document.getElementById('fStatus').value='ยังไม่เริ่ม';
   document.getElementById('fPriority').value='ปานกลาง';
   document.getElementById('attachPreview').innerHTML='';
+  document.getElementById('fImage').value='';
   document.getElementById('fImage').value='';
   currentImageData=null;
   handleStatusChange();
@@ -860,6 +1704,23 @@ function removeImage(){
   document.getElementById('fImage').value='';
 }
 
+function getLocalDateStr(dateObj) {
+  const d = dateObj || new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const dateVal = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${dateVal}`;
+}
+
+function parseBstToIso(bstStr) {
+  if(!bstStr) return '';
+  const parts = bstStr.split('/');
+  if(parts.length===3) {
+    return `${parseInt(parts[2])-543}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
+  }
+  return '';
+}
+
 function saveTask(){
   const name=document.getElementById('fName').value.trim();
   if(!name){alert('กรุณากรอกชื่องาน');return;}
@@ -871,18 +1732,29 @@ function saveTask(){
   if(isNowCompleted&&!wasCompleted) completedAt=fmtDate(new Date());
   if(!isNowCompleted) completedAt='';
 
+  let startDate = document.getElementById('fStart').value;
+  if (!startDate) {
+    startDate = getLocalDateStr();
+  }
+
+  let deadline = document.getElementById('fDeadline').value;
+  if (isNowCompleted && !deadline) {
+    deadline = parseBstToIso(completedAt) || getLocalDateStr();
+  }
+
   const t={
     id:editId||Date.now().toString(),
     name, category:document.getElementById('fCat').value,
     assigner:document.getElementById('fAssigner').value,
     status:newStatus,
     priority:document.getElementById('fPriority').value,
-    startDate:document.getElementById('fStart').value,
-    deadline:document.getElementById('fDeadline').value,
+    startDate,
+    deadline,
     percent:parseInt(document.getElementById('fPct').value)||0,
     fileName:document.getElementById('fFileName').value.trim(),
     imageData:currentImageData,
-    link:document.getElementById('fLink').value,
+    links:currentModalLinks,
+    link:currentModalLinks[0] ? currentModalLinks[0].url : '',
     note:document.getElementById('fNote').value,
     completedAt,
     updates:oldTask?(oldTask.updates||[]):[],
@@ -890,11 +1762,15 @@ function saveTask(){
   };
   if(editId) tasks=tasks.map(x=>x.id===editId?t:x);
   else tasks.push(t);
-  save(); closeModal(); renderTasks(); renderDashboard(); checkNotifications();
+  save(); closeModal(); renderTasks(); 
+  if(typeof renderCompletedTasks==='function') renderCompletedTasks();
+  renderDashboard(); checkNotifications(); updateDatalist();
 }
 function deleteTask(id){
   if(!confirm('ลบงานนี้?')) return;
-  tasks=tasks.filter(t=>t.id!==id); save(); renderTasks(); renderDashboard(); checkNotifications();
+  tasks=tasks.filter(t=>t.id!==id); save(); renderTasks();
+  if(typeof renderCompletedTasks==='function') renderCompletedTasks();
+  renderDashboard(); checkNotifications();
 }
 
 // ============ EXPORT ============
@@ -922,41 +1798,132 @@ function exportCSV(){
   const rows=tasks.map(t=>[t.id,t.name,t.category,t.status,t.priority,t.startDate,t.deadline,t.percent,t.assigner,t.fileName,t.link,t.completedAt,t.note].map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`));
   dl(new Blob(['\uFEFF'+[headers,...rows].map(r=>r.join(',')).join('\n')],{type:'text/csv;charset=utf-8'}),'manybear-tasks-'+fmt(new Date())+'.csv');
 }
+function copyBackupCode(){
+  const d={tasks,categories,assigners,exportedAt:new Date().toISOString()};
+  const str=btoa(unescape(encodeURIComponent(JSON.stringify(d))));
+  navigator.clipboard.writeText(str).then(()=>{
+    alert('คัดลอกรหัสสำรองข้อมูลลงคลิปบอร์ดแล้ว! คุณสามารถส่งรหัสนี้ทาง LINE เพื่อกู้คืนข้อมูลได้ทันที');
+  }).catch(()=>{
+    const dummy=document.createElement("textarea");
+    document.body.appendChild(dummy);
+    dummy.value=str;
+    dummy.select();
+    document.execCommand("copy");
+    document.body.removeChild(dummy);
+    alert('คัดลอกรหัสสำรองข้อมูลเรียบร้อยแล้ว!');
+  });
+}
+function restoreBackupCodePrompt(){
+  const str=prompt('วางรหัสสำรองข้อมูล (รหัสตัวอักษรยาวๆ ที่คัดลอกมา):');
+  if(!str) return;
+  try{
+    const json=decodeURIComponent(escape(atob(str.trim())));
+    const d=JSON.parse(json);
+    if(d.tasks) tasks=d.tasks;
+    if(d.categories) categories=d.categories;
+    if(d.assigners) assigners=d.assigners;
+    save(); renderSettings(); renderDashboard(); checkNotifications();
+    alert('กู้คืนข้อมูลสำเร็จ! มี '+tasks.length+' งาน');
+  }catch(e){alert('รหัสสำรองข้อมูลไม่ถูกต้อง');}
+}
 function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();}
 function clearAll(){if(confirm('ล้างข้อมูลทั้งหมด? ไม่สามารถกู้คืนได้!')){tasks=[];save();renderDashboard();renderSettings();checkNotifications();alert('ล้างข้อมูลเรียบร้อย');}}
 
 // ============ PDF / PRINT ============
-function openPdfModal(){document.getElementById('pdfModal').classList.add('open');}
-
-function getFilteredTasks(){
-  const search=(document.getElementById('searchInput')||{value:''}).value.toLowerCase();
-  const cat=(document.getElementById('filterCat')||{value:''}).value;
-  const status=(document.getElementById('filterStatus')||{value:''}).value;
-  const priority=(document.getElementById('filterPriority')||{value:''}).value;
-  const assigner=(document.getElementById('filterAssigner')||{value:''}).value;
-  return tasks.filter(t=>{
-    if(search&&!t.name.toLowerCase().includes(search)) return false;
-    if(cat&&t.category!==cat) return false;
-    if(status&&t.status!==status) return false;
-    if(priority&&t.priority!==priority) return false;
-    if(assigner&&t.assigner!==assigner) return false;
-    return true;
-  });
+// ============ PDF / PRINT ============
+function togglePdfFilters() {
+  const useScreen = document.getElementById('pdfUseScreenFilters').checked;
+  const filterSection = document.getElementById('pdfCustomFiltersSection');
+  if (useScreen) {
+    filterSection.style.display = 'none';
+  } else {
+    filterSection.style.display = 'flex';
+  }
 }
 
-function buildFilterLabel(){
+function openPdfModal(){
+  const pdfCat = document.getElementById('pdfFilterCat');
+  const pdfAsg = document.getElementById('pdfFilterAssigner');
+  
+  pdfCat.innerHTML = '<option value="all">พิมพ์ทุกหมวดหมู่</option>' + categories.map(c => `<option>${c}</option>`).join('');
+  pdfAsg.innerHTML = '<option value="all">พิมพ์ผู้สั่งงานทั้งหมด</option>' + assigners.map(a => `<option>${a}</option>`).join('');
+  
+  if (activePage === 'completed') {
+    document.getElementById('pdfTaskType').value = 'completed';
+  } else if (activePage === 'tasks') {
+    document.getElementById('pdfTaskType').value = 'active';
+  } else {
+    document.getElementById('pdfTaskType').value = 'all';
+  }
+  
+  document.getElementById('pdfUseScreenFilters').checked = true;
+  togglePdfFilters();
+  document.getElementById('pdfModal').classList.add('open');
+}
+
+function getFilteredTasks(type){
+  if (type === 'completed') {
+    const search=(document.getElementById('completedSearchInput')||{value:''}).value.toLowerCase();
+    const cat=(document.getElementById('completedFilterCat')||{value:''}).value;
+    const priority=(document.getElementById('completedFilterPriority')||{value:''}).value;
+    const assigner=(document.getElementById('completedFilterAssigner')||{value:''}).value;
+    return tasks.filter(t=>{
+      if(t.status!=='เสร็จสิ้น') return false;
+      if(search&&!t.name.toLowerCase().includes(search)) return false;
+      if(cat&&t.category!==cat) return false;
+      if(priority&&t.priority!==priority) return false;
+      if(assigner&&t.assigner!==assigner) return false;
+      return true;
+    });
+  } else {
+    const search=(document.getElementById('searchInput')||{value:''}).value.toLowerCase();
+    const cat=(document.getElementById('filterCat')||{value:''}).value;
+    const status=(document.getElementById('filterStatus')||{value:''}).value;
+    const priority=(document.getElementById('filterPriority')||{value:''}).value;
+    const assigner=(document.getElementById('filterAssigner')||{value:''}).value;
+    return tasks.filter(t=>{
+      if(type === 'active' && t.status==='เสร็จสิ้น') return false;
+      if(search&&!t.name.toLowerCase().includes(search)) return false;
+      if(cat&&t.category!==cat) return false;
+      
+      // Status filter logic
+      if(status==='active'){
+        if(t.status==='เสร็จสิ้น') return false;
+      } else if(status!=='all' && status!==''){
+        if(t.status!==status) return false;
+      }
+      
+      if(priority&&t.priority!==priority) return false;
+      if(assigner&&t.assigner!==assigner) return false;
+      return true;
+    });
+  }
+}
+
+function buildFilterLabel(type){
   const parts=[];
-  const cat=(document.getElementById('filterCat')||{value:''}).value;
-  const status=(document.getElementById('filterStatus')||{value:''}).value;
-  const priority=(document.getElementById('filterPriority')||{value:''}).value;
-  const assigner=(document.getElementById('filterAssigner')||{value:''}).value;
-  const search=(document.getElementById('searchInput')||{value:''}).value;
-  if(cat) parts.push('หมวด: '+cat);
-  if(status) parts.push('สถานะ: '+status);
-  if(priority) parts.push('ความสำคัญ: '+priority);
-  if(assigner) parts.push('ผู้สั่งงาน: '+assigner);
-  if(search) parts.push('ค้นหา: "'+search+'"');
-  return parts.length?'ตัวกรอง: '+parts.join(' | '):'แสดงทั้งหมด';
+  if (type === 'completed') {
+    const cat=(document.getElementById('completedFilterCat')||{value:''}).value;
+    const priority=(document.getElementById('completedFilterPriority')||{value:''}).value;
+    const assigner=(document.getElementById('completedFilterAssigner')||{value:''}).value;
+    const search=(document.getElementById('completedSearchInput')||{value:''}).value;
+    if(cat) parts.push('หมวด: '+cat);
+    if(priority) parts.push('ความสำคัญ: '+priority);
+    if(assigner) parts.push('ผู้สั่งงาน: '+assigner);
+    if(search) parts.push('ค้นหา: "'+search+'"');
+  } else {
+    const cat=(document.getElementById('filterCat')||{value:''}).value;
+    const status=(document.getElementById('filterStatus')||{value:''}).value;
+    const priority=(document.getElementById('filterPriority')||{value:''}).value;
+    const assigner=(document.getElementById('filterAssigner')||{value:''}).value;
+    const search=(document.getElementById('searchInput')||{value:''}).value;
+    if(cat) parts.push('หมวด: '+cat);
+    if(status) parts.push('สถานะ: '+status);
+    if(priority) parts.push('ความสำคัญ: '+priority);
+    if(assigner) parts.push('ผู้สั่งงาน: '+assigner);
+    if(search) parts.push('ค้นหา: "'+search+'"');
+  }
+  return parts.length?'ตัวกรองหน้าจอ: '+parts.join(' | '):'แสดงทั้งหมด (ไม่กรอง)';
 }
 
 function doPrint(){
@@ -964,10 +1931,37 @@ function doPrint(){
   const showDash=document.getElementById('pdfDash').checked;
   const showTasks=document.getElementById('pdfTasks').checked;
   const showHist=document.getElementById('pdfHistory').checked;
-  const ignoreFilter=document.getElementById('pdfIgnoreFilter').checked;
+  const useScreenFilters=document.getElementById('pdfUseScreenFilters').checked;
   const fullNote=document.getElementById('pdfFullNote').checked;
-  const filteredTasks=applySort(ignoreFilter ? tasks.slice() : getFilteredTasks());
-  const filterLabel=ignoreFilter ? 'แสดงทั้งหมด (ไม่ใช้ตัวกรอง)' : buildFilterLabel();
+  const showUpdates=document.getElementById('pdfShowUpdates').checked;
+  const taskType=document.getElementById('pdfTaskType').value;
+
+  let filteredTasks = [];
+  let filterLabel = '';
+
+  if (useScreenFilters) {
+    filteredTasks = getFilteredTasks(taskType);
+    filterLabel = buildFilterLabel(taskType);
+  } else {
+    const pdfCat = document.getElementById('pdfFilterCat').value;
+    const pdfAsg = document.getElementById('pdfFilterAssigner').value;
+    filteredTasks = tasks.filter(t => {
+      if (taskType === 'active' && t.status === 'เสร็จสิ้น') return false;
+      if (taskType === 'completed' && t.status !== 'เสร็จสิ้น') return false;
+      if (pdfCat !== 'all' && t.category !== pdfCat) return false;
+      if (pdfAsg !== 'all' && t.assigner !== pdfAsg) return false;
+      return true;
+    });
+
+    const parts = [];
+    if (taskType === 'active') parts.push('เฉพาะงานยังไม่เสร็จ');
+    if (taskType === 'completed') parts.push('เฉพาะงานที่เสร็จสิ้น');
+    if (pdfCat !== 'all') parts.push('หมวด: ' + pdfCat);
+    if (pdfAsg !== 'all') parts.push('ผู้สั่งงาน: ' + pdfAsg);
+    filterLabel = parts.length ? 'ตัวกรองพิมพ์: ' + parts.join(' | ') : 'แสดงทั้งหมด (ไม่กรอง)';
+  }
+
+  filteredTasks = applySort(filteredTasks);
   const now=new Date();
   const printDate=now.toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'});
   const printTime=now.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
@@ -992,9 +1986,9 @@ function doPrint(){
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Sarabun',Arial,sans-serif;font-size:11px;background:#fff;color:#1f1f1f;
          -webkit-font-smoothing:antialiased}
-    .print-page{padding:12mm 12mm 8mm;page-break-after:always;position:relative}
+    .print-page{padding:0;margin:0;page-break-after:always;position:relative}
     .print-page:last-child{page-break-after:auto}
-    .section-tag{position:absolute;top:6mm;right:12mm;font-size:8.5px;color:#aaa}
+    .section-tag{position:absolute;top:-8mm;right:0;font-size:8.5px;color:#aaa}
     h1{color:#5a5ab8;font-size:16px;margin-bottom:3px;font-family:'Sarabun',Arial,sans-serif}
     h2{color:#5a5ab8;font-size:12px;margin:0 0 8px;padding-bottom:5px;border-bottom:2px solid #8989eb;font-family:'Sarabun',Arial,sans-serif}
     h3{color:#5a5ab8;font-size:11px;margin:10px 0 4px;font-family:'Sarabun',Arial,sans-serif}
@@ -1010,7 +2004,7 @@ function doPrint(){
     th{background:#8989eb;color:#fff;padding:4px 5px;text-align:left;font-weight:700;overflow:hidden;word-break:break-word}
     td{padding:3px 5px;border-bottom:1px solid #ebebeb;vertical-align:top;overflow:hidden;word-break:break-word;line-height:1.4}
     tr:nth-child(even) td{background:#f9f9ff}
-    tr{page-break-inside:avoid}
+    tr, td{page-break-inside:avoid;break-inside:avoid}
     .badge-done{color:#11734b;font-weight:700}
     .badge-inprog{color:#0a53a8;font-weight:700}
     .badge-urgent{color:#b10202;font-weight:700}
@@ -1019,13 +2013,14 @@ function doPrint(){
     .badge-low{color:#11734b}
     .month-head{background:#e8e7fc;color:#5a5ab8;padding:4px 8px;font-weight:700;font-size:10px;margin:10px 0 3px;border-left:4px solid #8989eb}
     .row-overdue td{background:#fff0f0!important}
+    .group-divider-row td{background:#e8e7fc !important;color:#5a5ab8 !important;font-weight:700;padding:5px 8px;font-size:9.5px;border-bottom:1.5px solid #8989eb !important}
     .attach-ico{font-size:10px;margin-left:3px}
     .note-appendix-item{margin-bottom:10px;padding-bottom:8px;border-bottom:1px dashed #ddd}
     .note-appendix-item b{color:#5a5ab8}
-    .sign-box{display:flex;gap:30px;margin-top:50px}
+    .sign-box{display:flex;gap:30px;margin-top:50px;page-break-inside:avoid;break-inside:avoid}
     .sign-box .col{flex:1;font-size:10px}
     .sign-line{margin-top:36px;border-top:1px solid #999;padding-top:4px;color:#888}
-    @page{size:A4 landscape;margin:0}
+    @page{size:A4 landscape;margin:15mm 15mm 15mm 15mm}
     @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}.print-page{page-break-after:always}.print-page:last-child{page-break-after:auto}}
   </style>`;
 
@@ -1033,15 +2028,16 @@ function doPrint(){
 
   if(showDash){
     const today=new Date(); today.setHours(0,0,0,0);
-    const total=tasks.length,done=tasks.filter(t=>t.status==='เสร็จสิ้น').length;
-    const inprog=tasks.filter(t=>t.status==='กำลังทำ').length;
-    const urg=tasks.filter(t=>{if(t.status==='เสร็จสิ้น'||!t.deadline) return false;const d=new Date(t.deadline);d.setHours(0,0,0,0);return Math.round((d-today)/86400000)<=3;}).length;
+    const printTasksSource = useScreenFilters ? filteredTasks : tasks;
+    const total=printTasksSource.length,done=printTasksSource.filter(t=>t.status==='เสร็จสิ้น').length;
+    const inprog=printTasksSource.filter(t=>t.status==='กำลังทำ').length;
+    const urg=printTasksSource.filter(t=>{if(t.status==='เสร็จสิ้น'||!t.deadline) return false;const d=new Date(t.deadline);d.setHours(0,0,0,0);return Math.round((d-today)/86400000)<=3;}).length;
     const pct=total>0?Math.round(done/total*100):0;
-    const urgList=tasks.filter(t=>{if(t.status==='เสร็จสิ้น'||!t.deadline) return false;const d=new Date(t.deadline);d.setHours(0,0,0,0);return Math.round((d-today)/86400000)<=3;}).sort((a,b)=>new Date(a.deadline)-new Date(b.deadline));
+    const urgList=printTasksSource.filter(t=>{if(t.status==='เสร็จสิ้น'||!t.deadline) return false;const d=new Date(t.deadline);d.setHours(0,0,0,0);return Math.round((d-today)/86400000)<=3;}).sort((a,b)=>new Date(a.deadline)-new Date(b.deadline));
 
     // สรุปงานตามผู้สั่งงาน
     const aStats={};
-    tasks.forEach(t=>{const a=t.assigner||'ไม่ระบุ';if(!aStats[a])aStats[a]={total:0,done:0};aStats[a].total++;if(t.status==='เสร็จสิ้น')aStats[a].done++;});
+    printTasksSource.forEach(t=>{const a=t.assigner||'ไม่ระบุ';if(!aStats[a])aStats[a]={total:0,done:0};aStats[a].total++;if(t.status==='เสร็จสิ้น')aStats[a].done++;});
     const aRows=Object.keys(aStats).sort().map(a=>`<tr><td><strong>${a}</strong></td><td style="text-align:center">${aStats[a].total}</td><td style="text-align:center" class="badge-done">${aStats[a].done}</td><td style="text-align:center">${aStats[a].total-aStats[a].done}</td></tr>`).join('');
 
     sections.push(`
@@ -1070,35 +2066,165 @@ function doPrint(){
 
   if(showTasks){
     const today=new Date(); today.setHours(0,0,0,0);
-    sections.push(`
-      <h1>🐻 MANYBEAR WORK APP</h1>
-      <div class="meta">รายการงาน &nbsp;•&nbsp; พิมพ์เมื่อ: ${printDateTime} &nbsp;<span class="filter-tag">${filterLabel}</span> &nbsp;• แสดง ${filteredTasks.length} รายการ${fullNote?' • หมายเหตุยาวดูเพิ่มท้ายเอกสาร (*)':''}</div>
-      <h2>🗂️ รายการงานทั้งหมด</h2>
-      ${!filteredTasks.length?'<p style="color:#aaa;padding:20px 0">ไม่มีรายการงานที่ตรงกับตัวกรอง</p>':
-      `<table><colgroup><col style="width:3%"><col style="width:22%"><col style="width:7%"><col style="width:8%"><col style="width:7%"><col style="width:7%"><col style="width:7%"><col style="width:5%"><col style="width:4%"><col style="width:9%"><col style="width:9%"><col style="width:12%"></colgroup>
-      <thead><tr><th>#</th><th>ชื่องาน</th><th>หมวด</th><th>สถานะ</th><th>ความสำคัญ</th><th>วันเริ่ม</th><th>กำหนดส่ง</th><th>วันเหลือ</th><th>%</th><th>ผู้สั่งงาน</th><th>เสร็จจริงวันที่</th><th>หมายเหตุ</th></tr></thead><tbody>`+
-      filteredTasks.map((t,i)=>{
+    let tableHeaderTitle = '🗂️ รายการงานทั้งหมด';
+    if (taskType === 'active') tableHeaderTitle = '🗂️ รายการงานที่กำลังดำเนินงาน';
+    if (taskType === 'completed') tableHeaderTitle = '🗂️ รายการงานที่เสร็จสิ้นแล้ว';
+
+    // Group by active/activity dates (similar to renderTasks)
+    const todayStr = getLocalDateStr(today);
+    const yesterday = new Date(); yesterday.setDate(today.getDate() - 1);
+    const yesterdayStr = getLocalDateStr(yesterday);
+
+    const records = [];
+    filteredTasks.forEach(t => {
+      const activeDates = new Set();
+      
+      // 1. Creation Date
+      const ts = parseInt(t.id);
+      if (!isNaN(ts) && ts > 1500000000000) {
+        activeDates.add(getLocalDateStr(new Date(ts)));
+      } else if (t.startDate) {
+        activeDates.add(getLocalDateStr(new Date(t.startDate)));
+      } else {
+        activeDates.add(todayStr);
+      }
+      
+      // 2. Daily updates dates
+      if (t.updates && t.updates.length > 0) {
+        t.updates.forEach(u => {
+          if (u.date) activeDates.add(getLocalDateStr(new Date(u.date)));
+        });
+      }
+      
+      // 3. Completed date
+      if (t.status === 'เสร็จสิ้น' && t.completedAt) {
+        let compDate = null;
+        if (t.completedAt.includes('/')) {
+          const parts = t.completedAt.split('/');
+          if (parts.length === 3) {
+            const year = parseInt(parts[2]) > 2500 ? parseInt(parts[2]) - 543 : parseInt(parts[2]);
+            compDate = new Date(year, parseInt(parts[1]) - 1, parseInt(parts[0]));
+          }
+        } else {
+          compDate = new Date(t.completedAt);
+        }
+        if (compDate && !isNaN(compDate.getTime())) {
+          activeDates.add(getLocalDateStr(compDate));
+        }
+      }
+      
+      activeDates.forEach(dateKey => {
+        let updateTextForThisDay = '';
+        if (t.updates && t.updates.length > 0) {
+          const dayUpdates = t.updates.filter(u => getLocalDateStr(new Date(u.date)) === dateKey);
+          if (dayUpdates.length > 0) {
+            updateTextForThisDay = dayUpdates.map(u => u.text).join(' | ');
+          }
+        }
+        records.push({
+          task: t,
+          dateKey: dateKey,
+          updateText: updateTextForThisDay
+        });
+      });
+    });
+
+    // Group records by dateKey
+    const grouped = {};
+    records.forEach(r => {
+      if (!grouped[r.dateKey]) grouped[r.dateKey] = [];
+      grouped[r.dateKey].push(r);
+    });
+
+    const sortedKeys = Object.keys(grouped).sort().reverse();
+
+    let tableBodyHtml = '';
+    sortedKeys.forEach(dateKey => {
+      const groupRecords = grouped[dateKey];
+      const d = new Date(dateKey);
+      let friendlyDate = `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear() + 543}`;
+      if (dateKey === todayStr) {
+        friendlyDate = `วันนี้ ( ${friendlyDate} )`;
+      } else if (dateKey === yesterdayStr) {
+        friendlyDate = `เมื่อวานนี้ ( ${friendlyDate} )`;
+      }
+
+      // Divider row
+      tableBodyHtml += `
+        <tr class="group-divider-row">
+          <td colspan="12">
+            📅 ${friendlyDate} (${groupRecords.length} งาน)
+          </td>
+        </tr>
+      `;
+
+      groupRecords.forEach((r, idx) => {
+        const t = r.task;
         const priCls={'ด่วน':'badge-urgent','สูง':'badge-high','ปานกลาง':'badge-mid','ต่ำ':'badge-low'}[t.priority]||'';
         const stCls={'เสร็จสิ้น':'badge-done','กำลังทำ':'badge-inprog','ด่วน':'badge-urgent'}[t.status]||'';
         let dayLeft='-';
-        if(t.deadline&&t.status!=='เสร็จสิ้น'){const d=new Date(t.deadline);d.setHours(0,0,0,0);const diff=Math.round((d-today)/86400000);dayLeft=`<span style="color:${diff<0?'#b10202':diff<=3?'#c0392b':'#444'};font-weight:${diff<=3?700:400}">${diff}</span>`;}
+        if(t.deadline&&t.status!=='เสร็จสิ้น'){
+          const dDeadline=new Date(t.deadline); dDeadline.setHours(0,0,0,0);
+          const diff=Math.round((dDeadline-today)/86400000);
+          dayLeft=`<span style="color:${diff<0?'#b10202':diff<=3?'#c0392b':'#444'};font-weight:${diff<=3?700:400}">${diff}</span>`;
+        }
         const rowCls=t.deadline&&t.status!=='เสร็จสิ้น'&&Math.round((new Date(t.deadline).setHours(0,0,0,0)-today)/86400000)<0?'row-overdue':'';
         const attach=(t.fileName?'📎':'')+(t.imageData?'🖼️':'');
-        const completedDate=t.completedAt?new Date(t.completedAt).toLocaleDateString('th-TH'):'-';
-        return `<tr class="${rowCls}"><td>${i+1}</td><td><strong>${t.name}</strong>${attach?` <span class="attach-ico" title="${t.fileName||''}">${attach}</span>`:''}</td><td>${t.category||'-'}</td><td class="${stCls}">${t.status||'-'}</td><td class="${priCls}">${t.priority||'-'}</td><td>${t.startDate||'-'}</td><td>${t.deadline||'-'}</td><td style="text-align:center">${dayLeft}</td><td>${t.percent||0}%</td><td>${t.assigner||'-'}</td><td>${completedDate}</td><td>${noteCell(t)}</td></tr>`;
-      }).join('')+'</tbody></table>'}
+        const lnks = t.links || (t.link ? [ { label: 'ลิงก์', url: t.link } ] : []);
+        let linkIndicator = '';
+        lnks.forEach(lnk => {
+          if(lnk.url){
+            const label = lnk.label || 'ลิงก์';
+            linkIndicator += ` <span style="font-size:7.5px;background:#eef2ff;color:#5a5ab8;padding:1px 3px;border-radius:3px;border:1px solid #c5c5f0;white-space:nowrap">🔗 ${label}</span>`;
+          }
+        });
+
+        const completedDate=formatCompletedDate(t.completedAt);
+
+        let updHtml = '';
+        if(showUpdates && r.updateText){
+          updHtml = `<div style="font-size:8px;color:#555;margin-top:2px;padding-left:6px;border-left:1.5px solid #bbb;line-height:1.2;word-break:break-word">• <i>อัปเดตวันนี้:</i> ${r.updateText}</div>`;
+        }
+
+        tableBodyHtml += `
+          <tr class="${rowCls}">
+            <td>${idx+1}</td>
+            <td><strong>${t.name}</strong>${attach?` <span class="attach-ico" title="${t.fileName||''}">${attach}</span>`:''}${linkIndicator}${updHtml}</td>
+            <td>${t.category||'-'}</td>
+            <td class="${stCls}">${t.status||'-'}</td>
+            <td class="${priCls}">${t.priority||'-'}</td>
+            <td>${t.startDate||'-'}</td>
+            <td>${t.deadline||'-'}</td>
+            <td style="text-align:center">${dayLeft}</td>
+            <td>${t.percent||0}%</td>
+            <td>${t.assigner||'-'}</td>
+            <td>${completedDate}</td>
+            <td>${noteCell(t)}</td>
+          </tr>
+        `;
+      });
+    });
+
+    sections.push(`
+      <h1>🐻 MANYBEAR WORK APP</h1>
+      <div class="meta">รายการงาน &nbsp;•&nbsp; พิมพ์เมื่อ: ${printDateTime} &nbsp;<span class="filter-tag">${filterLabel}</span> &nbsp;• แสดง ${records.length} แถวกิจกรรม${fullNote?' • หมายเหตุยาวดูเพิ่มท้ายเอกสาร (*)':''}</div>
+      <h2>${tableHeaderTitle}</h2>
+      ${!records.length?'<p style="color:#aaa;padding:20px 0">ไม่มีรายการงานที่ตรงกับตัวกรอง</p>':
+      `<table><colgroup><col style="width:3%"><col style="width:22%"><col style="width:7%"><col style="width:8%"><col style="width:7%"><col style="width:7%"><col style="width:7%"><col style="width:5%"><col style="width:4%"><col style="width:9%"><col style="width:9%"><col style="width:12%"></colgroup>
+      <thead><tr><th>#</th><th>ชื่องาน</th><th>หมวด</th><th>สถานะ</th><th>ความสำคัญ</th><th>วันเริ่ม</th><th>กำหนดส่ง</th><th>วันเหลือ</th><th>%</th><th>ผู้สั่งงาน</th><th>เสร็จจริงวันที่</th><th>หมายเหตุ</th></tr></thead>
+      <tbody>${tableBodyHtml}</tbody></table>`}
     `);
   }
 
   if(showHist){
-    const done2=tasks.filter(t=>t.status==='เสร็จสิ้น');
+    const done2 = useScreenFilters ? filteredTasks.filter(t=>t.status==='เสร็จสิ้น') : tasks.filter(t=>t.status==='เสร็จสิ้น');
     const g={};
     done2.forEach(t=>{const d=t.deadline?new Date(t.deadline):new Date();const k=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;if(!g[k]){g[k]={label:`${MONTHS[d.getMonth()]} ${d.getFullYear()+543}`,tasks:[]};}g[k].tasks.push(t);});
     const histHtml=Object.keys(g).sort().reverse().map(k=>`
       <div class="month-head">${g[k].label} — ${g[k].tasks.length} งาน</div>
       <table><colgroup><col style="width:4%"><col style="width:28%"><col style="width:10%"><col style="width:10%"><col style="width:10%"><col style="width:10%"><col style="width:10%"><col style="width:18%"></colgroup>
       <thead><tr><th>#</th><th>ชื่องาน</th><th>หมวด</th><th>สถานะ</th><th>ความสำคัญ</th><th>ผู้สั่งงาน</th><th>กำหนดส่ง</th><th>เสร็จจริงวันที่</th></tr></thead><tbody>`+
-      g[k].tasks.map((t,i)=>`<tr><td>${i+1}</td><td><strong>${t.name}</strong></td><td>${t.category||'-'}</td><td class="badge-done">${t.status}</td><td>${t.priority||'-'}</td><td>${t.assigner||'-'}</td><td>${t.deadline||'-'}</td><td class="badge-done">${t.completedAt?new Date(t.completedAt).toLocaleDateString('th-TH'):'-'}</td></tr>`).join('')+
+      g[k].tasks.map((t,i)=>`<tr><td>${i+1}</td><td><strong>${t.name}</strong></td><td>${t.category||'-'}</td><td class="badge-done">${t.status}</td><td>${t.priority||'-'}</td><td>${t.assigner||'-'}</td><td>${t.deadline||'-'}</td><td class="badge-done">${formatCompletedDate(t.completedAt)}</td></tr>`).join('')+
       '</tbody></table>'
     ).join('');
     sections.push(`
@@ -1135,12 +2261,367 @@ function doPrint(){
   setTimeout(()=>{window.print();setTimeout(()=>div.remove(),600);},150);
 }
 
+// ============ SMART DUPLICATION & QUICK ADD ============
+function duplicateTask(id){
+  const t=tasks.find(x=>x.id===id); if(!t) return;
+  editId=null;
+  currentImageData=t.imageData||null;
+  document.getElementById('modalTitle').textContent='คัดลอกงาน (เพิ่มเป็นงานใหม่)';
+  populateModalDropdowns();
+  
+  document.getElementById('fName').value=t.name + ' - คัดลอก';
+  document.getElementById('fCat').value=t.category||'';
+  document.getElementById('fAssigner').value=t.assigner||'';
+  document.getElementById('fStatus').value='ยังไม่เริ่ม';
+  document.getElementById('fPriority').value=t.priority||'ปานกลาง';
+  document.getElementById('fPct').value=0;
+  document.getElementById('fPctLbl').textContent='0';
+  document.getElementById('fFileName').value=t.fileName||'';
+  document.getElementById('fNote').value=t.note||'';
+  currentModalLinks=t.links ? JSON.parse(JSON.stringify(t.links)) : (t.link ? [ { label: 'ลิงก์', url: t.link } ] : []);
+  renderModalLinks();
+  
+  // Calculate new deadline based on original task duration
+  document.getElementById('fStart').value=getLocalDateStr();
+  let newDeadline = '';
+  if (t.startDate && t.deadline) {
+    const originalStart = new Date(t.startDate);
+    const originalDeadline = new Date(t.deadline);
+    const diffTime = originalDeadline - originalStart;
+    if (diffTime >= 0) {
+      const durationDays = Math.round(diffTime / 86400000);
+      const targetDate = new Date();
+      targetDate.setDate(targetDate.getDate() + durationDays);
+      newDeadline = getLocalDateStr(targetDate);
+    }
+  }
+  document.getElementById('fDeadline').value=newDeadline;
+  
+  const prev=document.getElementById('attachPreview');
+  prev.innerHTML=t.imageData?`<img src="${t.imageData}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:1px solid #ddd">`:'' ;
+  editingUpdateId=null;
+  document.getElementById('formUpdateSection').style.display='none';
+  handleStatusChange();
+  document.getElementById('taskModal').classList.add('open');
+}
+
+function quickAddCategory() {
+  const v = prompt('ป้อนชื่อหมวดหมู่ใหม่:');
+  if (!v) return;
+  const trimmed = v.trim();
+  if (!trimmed || categories.includes(trimmed)) return;
+  categories.push(trimmed);
+  save();
+  populateModalDropdowns();
+  populateFilters();
+  document.getElementById('fCat').value = trimmed;
+}
+
+function quickAddAssigner() {
+  const v = prompt('ป้อนชื่อผู้สั่งงานใหม่:');
+  if (!v) return;
+  const trimmed = v.trim();
+  if (!trimmed || assigners.includes(trimmed)) return;
+  assigners.push(trimmed);
+  save();
+  populateModalDropdowns();
+  populateFilters();
+  document.getElementById('fAssigner').value = trimmed;
+}
+
+// ============ COMPLETED TASKS PAGE ============
+let compSortCol = 'completedAt', compSortDir = -1;
+
+function sortByCompleted(col){
+  if(compSortCol===col) compSortDir*=-1;
+  else{compSortCol=col;compSortDir=1;}
+  document.querySelectorAll('#page-completed .sort-icon').forEach(el=>el.textContent='');
+  const icon=document.getElementById('sic-'+col);
+  if(icon) icon.textContent=compSortDir===1?'▲':'▼';
+  renderCompletedTasks();
+}
+
+function applyCompletedSort(list){
+  const priOrder={'ด่วน':0,'สูง':1,'ปานกลาง':2,'ต่ำ':3};
+  list.sort((a,b)=>{
+    let va,vb;
+    if(compSortCol==='index'){va=tasks.indexOf(a);vb=tasks.indexOf(b);}
+    else if(compSortCol==='priority'){va=priOrder[a.priority]??9;vb=priOrder[b.priority]??9;}
+    else if(compSortCol==='deadline'||compSortCol==='startDate'||compSortCol==='completedAt'){
+      va=a[compSortCol]?new Date(a[compSortCol]).getTime():0;
+      vb=b[compSortCol]?new Date(b[compSortCol]).getTime():0;
+    }
+    else{va=(a[compSortCol]||'').toString().toLowerCase();vb=(b[compSortCol]||'').toString().toLowerCase();}
+    return va>vb?compSortDir:va<vb?-compSortDir:0;
+  });
+  return list;
+}
+
+function renderCompletedTasks(){
+  // Load column visibility preferences
+  if(localStorage.getItem('mb_comp_col_file')===null){
+    document.getElementById('compColShowFile').checked=false;
+  }else{
+    document.getElementById('compColShowFile').checked=localStorage.getItem('mb_comp_col_file')==='true';
+  }
+  if(localStorage.getItem('mb_comp_col_completed')===null){
+    document.getElementById('compColShowCompletedAt').checked=false;
+  }else{
+    document.getElementById('compColShowCompletedAt').checked=localStorage.getItem('mb_comp_col_completed')==='true';
+  }
+  if(localStorage.getItem('mb_comp_col_note')===null){
+    document.getElementById('compColShowNote').checked=false;
+  }else{
+    document.getElementById('compColShowNote').checked=localStorage.getItem('mb_comp_col_note')==='true';
+  }
+
+  const showFile=document.getElementById('compColShowFile').checked;
+  const showCompletedAt=document.getElementById('compColShowCompletedAt').checked;
+  const showNote=document.getElementById('compColShowNote').checked;
+
+  localStorage.setItem('mb_comp_col_file', showFile);
+  localStorage.setItem('mb_comp_col_completed', showCompletedAt);
+  localStorage.setItem('mb_comp_col_note', showNote);
+
+  const search=document.getElementById('completedSearchInput').value.toLowerCase();
+  const cat=document.getElementById('completedFilterCat').value;
+  const priority=document.getElementById('completedFilterPriority').value;
+  const assigner=document.getElementById('completedFilterAssigner').value;
+
+  let filtered=tasks.filter(t=>{
+    if(t.status!=='เสร็จสิ้น') return false;
+    if(search){
+      const hasMatch=t.name.toLowerCase().includes(search)||
+                       (t.note&&t.note.toLowerCase().includes(search))||
+                       (t.updates&&t.updates.some(u=>u.text&&u.text.toLowerCase().includes(search)));
+      if(!hasMatch) return false;
+    }
+    if(cat&&t.category!==cat) return false;
+    if(priority&&t.priority!==priority) return false;
+    if(assigner&&t.assigner!==assigner) return false;
+    return true;
+  });
+
+  applyCompletedSort(filtered);
+
+  const tbody=document.getElementById('completedTaskTable');
+  const empty=document.getElementById('completedTaskEmpty');
+  if(filtered.length===0){tbody.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+
+  let html = '<div class="task-cards-list">';
+  filtered.forEach(t => {
+    const priCls = { 'ด่วน': 'urgent', 'สูง': 'high', 'ปานกลาง': 'mid', 'ต่ำ': 'low' }[t.priority] || 'mid';
+    const pct = t.percent || 0;
+    const barColor = '#11734b';
+
+    // Attachments
+    let fileCell = '';
+    if (showFile) {
+      if (t.imageData) {
+        fileCell += `<img class="img-thumb" src="${t.imageData}" onclick="viewImg('${t.id}')" title="ดูรูป" style="max-height:30px;border-radius:4px;cursor:pointer;vertical-align:middle;margin-right:6px"> `;
+      }
+      if (t.fileName) {
+        fileCell += `<span style="font-size:11px;background:#f0f0f0;padding:2px 6px;border-radius:4px;color:#555" title="${t.fileName}">📄 ${t.fileName.length > 10 ? t.fileName.slice(0,8) + '…' : t.fileName}</span>`;
+      }
+      const lnks = t.links || (t.link ? [ { label: 'ลิงก์', url: t.link } ] : []);
+      lnks.forEach(lnk => {
+        if (lnk.url) {
+          const label = lnk.label || 'ลิงก์';
+          fileCell += ` <a href="${lnk.url}" target="_blank" style="display:inline-block;font-size:10px;background:#eef2ff;color:var(--purple-dark);padding:1px 5px;border-radius:4px;border:1px solid var(--purple-light);text-decoration:none;margin-top:2px" title="${lnk.url}">🔗 ${label}</a>`;
+        }
+      });
+    }
+
+    let noteCell = '';
+    if (showNote && t.note) {
+      noteCell = `<div style="font-size:12px;color:#888;margin-top:4px;border-top:1px dashed #eee;padding-top:4px">📝 <i>หมายเหตุ:</i> ${t.note}</div>`;
+    }
+
+    // Get the latest update if any
+    let latestUpdateBubble = '';
+    if (t.updates && t.updates.length > 0) {
+      const latest = t.updates[t.updates.length - 1];
+      latestUpdateBubble = `<div class="latest-update">📝 ${renderCollapsibleText(latest.text, 150, 'comp-' + t.id)}</div>`;
+    }
+
+    html += `
+      <div class="task-card completed">
+        <div class="priority-strip ${priCls}"></div>
+        <div class="card-content-wrap">
+          <div class="task-details">
+            <div class="title-row">
+              <span class="task-title" onclick="editTask('${t.id}')">${t.name}</span>
+              <span class="badge done">เสร็จสิ้น</span>
+              ${t.category ? `<span class="badge" style="background:var(--purple-light);color:var(--purple-dark);font-size:10px;padding:1px 6px">${t.category}</span>` : ''}
+            </div>
+            
+            ${latestUpdateBubble}
+            ${noteCell}
+            
+            <div class="meta-row">
+              ${t.assigner ? `<span class="meta-item">👤 ${t.assigner}</span>` : ''}
+              <span class="meta-item">📅 เริ่ม: ${t.startDate || '-'} | ส่ง: ${t.deadline || '-'}</span>
+              ${showCompletedAt ? `<span class="meta-item" style="color:var(--green)">เสร็จเมื่อ: ${formatCompletedDate(t.completedAt)}</span>` : ''}
+              ${fileCell ? `<span class="meta-item">${fileCell}</span>` : ''}
+            </div>
+          </div>
+          
+          <div class="card-right">
+            <div class="progress-section">
+              <div class="mini-bar-outer">
+                <div class="mini-bar-inner" style="width: ${pct}%; background: ${barColor}"></div>
+              </div>
+              <span class="pct-text">${pct}%</span>
+            </div>
+            <div class="action-buttons">
+              <button class="action-btn" onclick="editTask('${t.id}')" title="แก้ไข">✏️</button>
+              <button class="action-btn" onclick="duplicateTask('${t.id}')" title="คัดลอกงาน">📋</button>
+              <button class="action-btn delete" onclick="deleteTask('${t.id}')" title="ลบ">🗑</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+  html += '</div>';
+  tbody.innerHTML = html;
+}
+
+function populateCompletedFilters(){
+  const catEl=document.getElementById('completedFilterCat');
+  const asgEl=document.getElementById('completedFilterAssigner');
+  if(!catEl || !asgEl) return;
+  const curCat=catEl.value, curAsg=asgEl.value;
+  catEl.innerHTML='<option value="">ทุกหมวดหมู่</option>'+categories.map(c=>`<option>${c}</option>`).join('');
+  asgEl.innerHTML='<option value="">ทุกผู้สั่งงาน</option>'+assigners.map(a=>`<option>${a}</option>`).join('');
+  catEl.value=curCat; asgEl.value=curAsg;
+}
+
+function clearCompletedFilters(){
+  document.getElementById('completedSearchInput').value='';
+  ['completedFilterCat','completedFilterPriority','completedFilterAssigner'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.value='';
+  });
+  renderCompletedTasks();
+}
+
 // ============ HELPERS ============
 const MONTHS=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 function fmt(d){return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;}
 function fmtDate(d){return `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()+543}`;}
+function formatCompletedDate(val) {
+  if (!val) return '-';
+  if (val.includes('/')) return val;
+  const d = new Date(val);
+  if (!isNaN(d.getTime())) {
+    return fmtDate(d);
+  }
+  return val;
+}
+function renderCollapsibleText(text, limit = 150, uniqueId) {
+  if (!text) return '';
+  const htmlFull = text.replace(/\n/g, '<br>');
+  const lineCount = (text.match(/\n/g) || []).length;
+  if (text.length <= limit && lineCount < 3) {
+    return htmlFull;
+  }
+  let shortText = text.slice(0, limit);
+  const shortLines = shortText.split('\n');
+  if (shortLines.length > 2) {
+    shortText = shortLines.slice(0, 2).join('\n');
+  }
+  const htmlShort = shortText.replace(/\n/g, '<br>');
+  const escShort = htmlShort.replace(/"/g, '&quot;');
+  const escFull = htmlFull.replace(/"/g, '&quot;');
+  return `
+    <span class="collapsible-text-wrap" id="wrap-${uniqueId}" data-short="${escShort}" data-full="${escFull}">
+      <span class="text-content">${htmlShort}</span><span class="dots">...</span>
+      <a href="javascript:void(0)" class="toggle-text-btn" onclick="toggleTextCollapse('${uniqueId}')" style="color:var(--purple);font-weight:600;margin-left:6px;text-decoration:none;font-size:12px;white-space:nowrap">ดูเพิ่มเติม</a>
+    </span>
+  `;
+}
+function toggleTextCollapse(id) {
+  const wrap = document.getElementById('wrap-' + id);
+  if (!wrap) return;
+  const content = wrap.querySelector('.text-content');
+  const dots = wrap.querySelector('.dots');
+  const btn = wrap.querySelector('.toggle-text-btn');
+  const isExpanded = btn.textContent === 'ย่อลง';
+  if (isExpanded) {
+    content.innerHTML = wrap.dataset.short;
+    dots.style.display = 'inline';
+    btn.textContent = 'ดูเพิ่มเติม';
+  } else {
+    content.innerHTML = wrap.dataset.full;
+    dots.style.display = 'none';
+    btn.textContent = 'ย่อลง';
+  }
+}
+
+// ============ THEME COLOR ============
+function getContrastYIQ(hexcolor){
+  hexcolor=hexcolor.replace("#","");
+  const r=parseInt(hexcolor.substr(0,2),16);
+  const g=parseInt(hexcolor.substr(2,2),16);
+  const b=parseInt(hexcolor.substr(4,2),16);
+  const yiq=((r*299)+(g*587)+(b*114))/1000;
+  return (yiq>=155)?'#1f1f1f':'#ffffff';
+}
+function getLightShade(hexcolor){
+  hexcolor=hexcolor.replace("#","");
+  const r=parseInt(hexcolor.substr(0,2),16);
+  const g=parseInt(hexcolor.substr(2,2),16);
+  const b=parseInt(hexcolor.substr(4,2),16);
+  const nr=Math.round(r*0.12+255*0.88);
+  const ng=Math.round(g*0.12+255*0.88);
+  const nb=Math.round(b*0.12+255*0.88);
+  return "#"+nr.toString(16).padStart(2,'0')+ng.toString(16).padStart(2,'0')+nb.toString(16).padStart(2,'0');
+}
+function getDarkShade(hexcolor){
+  hexcolor=hexcolor.replace("#","");
+  const r=parseInt(hexcolor.substr(0,2),16);
+  const g=parseInt(hexcolor.substr(2,2),16);
+  const b=parseInt(hexcolor.substr(4,2),16);
+  const nr=Math.round(r*0.65);
+  const ng=Math.round(g*0.65);
+  const nb=Math.round(b*0.65);
+  return "#"+nr.toString(16).padStart(2,'0')+ng.toString(16).padStart(2,'0')+nb.toString(16).padStart(2,'0');
+}
+function setAppTheme(hexColor,saveToStorage=true){
+  const primary=hexColor;
+  const light=getLightShade(primary);
+  const dark=getDarkShade(primary);
+  const text=getContrastYIQ(primary);
+  
+  document.documentElement.style.setProperty('--purple',primary);
+  document.documentElement.style.setProperty('--purple-light',light);
+  document.documentElement.style.setProperty('--purple-dark',dark);
+  document.documentElement.style.setProperty('--nav-text',text);
+  
+  if(text==='#1f1f1f'){
+    document.documentElement.style.setProperty('--nav-btn-bg','rgba(0,0,0,0.06)');
+    document.documentElement.style.setProperty('--nav-btn-hover','rgba(0,0,0,0.12)');
+  }else{
+    document.documentElement.style.setProperty('--nav-btn-bg','rgba(255,255,255,0.15)');
+    document.documentElement.style.setProperty('--nav-btn-hover','rgba(255,255,255,0.28)');
+  }
+  
+  const picker=document.getElementById('themeCustomPicker');
+  if(picker) picker.value=hexColor;
+  
+  if(saveToStorage){
+    localStorage.setItem('mb_theme_color',primary);
+  }
+}
+function loadAppTheme(){
+  const saved=localStorage.getItem('mb_theme_color')||'#8989eb';
+  setAppTheme(saved,false);
+}
 
 // ============ INIT ============
+loadAppTheme();
 renderDashboard();
 populateFilters();
 checkNotifications();
